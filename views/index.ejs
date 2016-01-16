@@ -1,11 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="myApp">
   <head>
-    <title><%= title %></title>
+    <title> </title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="/javascripts/jquery.min.js"></script>
+    <script src="/javascripts/angular.min.js"></script>
+    <script src="/javascripts/client-angular.js"></script>
   </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+  <body ng-controller="mainctrl">
+    <form action="/api/lists" method="post">
+      title:<input type="text" name="title"><br/>
+      description:<input type="text" name="description"><br/>
+      <input type="submit" value="create list">
+    </form>
+  <div ng-repeat="v in lists track by $index">
+  <br/>
+    <form action="{{ '/api/lists/delete/'+v._id }}" method="get">
+      list title:{{v.title}}<br/>
+      list description:{{v.description}}<br/><input type="submit" value="x">
+    </form>
+    <ul>
+    <div ng-repeat="c in v.questions track by $index">
+      <br/>
+      
+      question title:{{c.title}} <br/>
+      question description:{{c.description}} <br/>
+      <div ng-repeat="x in c.answers track by $index">
+      <ul>
+        <li>options:{{x.answer}} votes:{{x.votes}}</li>
+      <ul>
+      </div>
+    </div>
+    
+    <br/>
+    <li>
+    <form action="/api/lists/question" method="post">
+      <input type="text" name="_id" value="{{ v._id }}" style="display:none;">
+      question name:<input type="text" name="title"><br/>
+      question description:<input type="text" name="description"><br/>
+      option:<input type="text" name="option[]"><button type="button" onclick="add(this)">+</button><br/>
+      <input type="submit" value="add question">
+    </form>
+    </li>
+    </ul>
+  </div>
+
   </body>
+  <script>
+  function add(elem){
+    $(elem).before('<br/>option:<input type="text" name="option[]">')
+  }
+  </script>
 </html>
+
+
+
