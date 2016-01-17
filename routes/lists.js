@@ -17,6 +17,7 @@ function createList(req, res){
 }
 
 function readLists(req, res){
+  res.header("Access-Control-Allow-Origin", "*");
   List.model.find({},function(err, users){
     var userMap = {};
     users.forEach(function(user){
