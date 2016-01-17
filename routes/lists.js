@@ -27,6 +27,12 @@ function readLists(req, res){
     else return res.send({status:200, data:userMap, message:"Fetching Lists"});
   });
 }
+function readList(req, res){
+  res.header("Access-Control-Allow-Origin", "*");
+  List.model.findOne({title:req.params.title},function(err, data){
+    res.send(data);
+  });
+}
 
 function addQuestion(req, res){
   List.model.findOne({_id:req.body._id},function(err, data){
@@ -57,6 +63,7 @@ function deleteList(req, res){
 }
 
 router.get('/delete/:_id', deleteList);
+router.get('/:title', readList);
 router.post('/', createList);
 router.get('/', readLists);
 router.post('/question', addQuestion);
