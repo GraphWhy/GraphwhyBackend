@@ -63,8 +63,6 @@ function loginUser(req, res){
       return res.send({status:200, data:{login:false}, message:req.params.phone+" login attempt 2"})
     }else{
       var p = require('crypto').createHash('md5').update(req.body.password).digest('hex');
-      console.log(p);
-      console.log(user)
       if(p==user.password){
         req.session.user = user;
       }else{
@@ -76,9 +74,18 @@ function loginUser(req, res){
   });
 }
 
+function checkUser(req, res){
+  if(req.user){
+    return res.send({logged:'true'})
+  }else{
+    return res.send({logged:'false'})
+  }
+}
+
 //crud user
 router.post('/', createUser);
 router.get('/', readUsers);
+router.get('/check', checkUser);
 router.get('/:id', readUser);
 router.post('/:id', loginUser);
 router.delete('/', deleteUsers);

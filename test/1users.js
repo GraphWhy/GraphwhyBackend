@@ -36,6 +36,49 @@ describe('users', function () {
         })
     })
   })
+
+  describe('checklogin', function(){
+    it('should check if user is logged in', function(done){
+      superagent
+        .get('http://localhost:'+port+'/api/users/check')
+        .end(function(err, res){
+          if(err) done(err)
+          expect(res.status).to.equal(200);
+          expect(res.body.logged).to.equal(false)
+          done();
+        })
+    })
+  })
+
+  describe('login', function(){
+    it('should login user', function(done){
+      superagent
+        .post('http://localhost:'+port+'/api/users/'+userid)
+        .send({
+          'password':'dog'
+        })
+        .end(function(err, res){
+          if(err) done(err)
+          expect(res.status).to.equal(200);
+          expect(res.body.data.login).to.equal(true);
+          done();
+        })
+    })
+  })
+
+  describe('checklogin', function(){
+    it('should check if user is logged in', function(done){
+      superagent
+        .get('http://localhost:'+port+'/api/users/check')
+        .end(function(err, res){
+          if(err) done(err)
+          expect(res.status).to.equal(200);
+          expect(res.body.logged).to.equal(true)
+          done();
+        })
+    })
+  })
+
   describe('delete', function(){
     it('should delete the user', function(done){
       superagent

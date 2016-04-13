@@ -6,7 +6,7 @@ var boot = require('../bin/www').boot,
 
 describe('tags', function () {
   describe('create', function(){
-    it('should create a tag', function(done){
+    it('should refuse to create a tag', function(done){
       superagent
         .post('http://localhost:'+port+'/api/tag')
         .send({
@@ -27,7 +27,6 @@ describe('tags', function () {
       superagent
         .post('http://localhost:'+port+'/api/users/login')
         .send({
-          'email':'testuser@gmail.com',
           'password':'watwat1001'
         })
         .end(function(err, res){
@@ -66,7 +65,6 @@ describe('tags', function () {
           if(err) done(err)
           expect(res.status).to.equal(200);
           expect(res.body.response.title).to.equal('testtag');
-          expect(res.body.response.questions).to.be.a('array');
           done();
         })
     })

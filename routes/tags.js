@@ -1,41 +1,38 @@
 var express = require('express');
-var List = require('../models/list.js');
+var Tag = require('../models/list.js');
 
 var router = express.Router();
 
-function createList(req, res){
-  var tempList = new List.model({
+function createTag(req, res){
+  var tempTag = new Tag.model({
     title: req.body.title,
-    description: req.body.description,
-    questions: [],
-    votes: []
   });
-  tempList.save(function(err, data){
+  tempTag.save(function(err, data){
     if(err) res.send({status:400, data:null, message:err});
-    res.send({list:tempList});
+    res.send({response:tempTag});
   });
 }
 
-function readLists(req, res){
+function readTags(req, res){
   res.header("Access-Control-Allow-Origin", "*");
-  List.model.find({},function(err, users){
+  Tag.model.find({},function(err, users){
     var userMap = {};
     users.forEach(function(user){
       userMap[user._id] = user;
     })
     if(err) return res.send({status:400, data:null, message:err});
-    else return res.send({status:200, data:userMap, message:"Fetching Lists"});
+    else return res.send({status:200, data:userMap, message:"Fetching Tags"});
   });
 }
-function readList(req, res){
+function readTag(req, res){
   res.header("Access-Control-Allow-Origin", "*");
-  List.model.findOne({_id:req.params._id},function(err, data){
-    res.send({list:data});
+  Tag.model.findOne({title:req.params._id},function(err, data){
+    res.send({response:data});
   });
 }
 
 function addQuestion(req, res){
-  List.model.findOne({_id:req.body._id},function(err, data){
+  Tag.model.findOne({_id:req.body._id},function(err, data){
     var optionsobj = [];
     for(var i = 0; i < req.body['option[]'].length; i++){
       optionsobj.push({
@@ -55,17 +52,17 @@ function addQuestion(req, res){
   });
 }
 
-function deleteList(req, res){
-  List.model.findOne({_id:req.params._id}).remove(function(err){
+function deleteTag(req, res){
+  Tag.model.findOne({_id:req.params._id}).remove(function(err){
     if(err) res.send({status:400, data:null, message:err});
     return res.send({'response':'deleted '+req.params._id})
   });
 }
 
-router.get('/delete/:_id', deleteList);
-router.get('/:_id', readList);
-router.post('/', createList);
-router.get('/', readLists);
+router.get('/delete/:_id', deleteTag);
+router.get('/:_id', readTag);
+router.post('/', createTag);
+router.get('/', readTags);
 router.post('/question', addQuestion);
 
 module.exports = router;
