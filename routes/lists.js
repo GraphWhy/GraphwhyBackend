@@ -12,8 +12,8 @@ function createList(req, res){
   });
   tempList.save(function(err, data){
     if(err) res.send({status:400, data:null, message:err});
-    else res.redirect('/')
-  }); 
+    res.send({list:tempList});
+  });
 }
 
 function readLists(req, res){
@@ -58,7 +58,7 @@ function addQuestion(req, res){
 function deleteList(req, res){
   List.model.findOne({_id:req.params._id}).remove(function(err){
     if(err) res.send({status:400, data:null, message:err});
-    else res.redirect('/')
+    return res.send({'response':'deleted '+req.params._id})
   });
 }
 
