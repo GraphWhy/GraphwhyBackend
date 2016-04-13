@@ -1,5 +1,4 @@
 var express = require('express');
-var gd = require('node-gd');
 var fs = require('fs')
 var util = require('util'); 
 var router = express.Router();
