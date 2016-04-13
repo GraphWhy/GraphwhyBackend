@@ -29,8 +29,8 @@ function readLists(req, res){
 }
 function readList(req, res){
   res.header("Access-Control-Allow-Origin", "*");
-  List.model.findOne({title:req.params.title},function(err, data){
-    res.send(data);
+  List.model.findOne({_id:req.params._id},function(err, data){
+    res.send({list:data});
   });
 }
 
@@ -63,7 +63,7 @@ function deleteList(req, res){
 }
 
 router.get('/delete/:_id', deleteList);
-router.get('/:title', readList);
+router.get('/:_id', readList);
 router.post('/', createList);
 router.get('/', readLists);
 router.post('/question', addQuestion);

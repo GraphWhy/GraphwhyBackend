@@ -3,12 +3,13 @@ var UserSchema = mongoose.Schema;
 var User = new UserSchema({
   email: String,
   password: String,
-  history: [ {
-    id: String,
-    time: String 
-  } ]
+  createdAt: { type:Date, default: Date.now },
+  identities: String,
+  responses: [String],
+  clicked: Number,
+  viewed: Number,
+  timeOnSite: Number
 });
 
 module.exports.model = mongoose.model("user_graphwhy", User);
-
 
