@@ -5,10 +5,6 @@ var boot = require('../bin/www').boot,
   expect = require('expect.js');
 
 describe('tags', function () {
-  before(function () {
-    boot();
-  });
-
   describe('create', function(){
     it('should create a tag', function(done){
       superagent
@@ -76,8 +72,4 @@ describe('tags', function () {
     })
   })
 
-
-  after(function () {
-    shutdown();
-  });
 });

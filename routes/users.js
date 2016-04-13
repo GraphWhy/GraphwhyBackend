@@ -4,7 +4,7 @@ var User = require('../models/user.js');
 var router = express.Router();
 
 
-//creates a user 
+//creates a user
 //urlparams: POST:/api/users/
 //post: 'email', 'password'
 function createUser(req, res){
@@ -16,8 +16,8 @@ function createUser(req, res){
   });
   tempUser.save(function(err, data){
     if(err) res.send({status:400, data:null, message:err});
-    else res.send({status:200, data:null, message:tempUser+" Saved"});
-  }); 
+    return res.send({user:data})
+  });
 }
 //prints out all users
 //urlparams: GET:/api/users/
@@ -34,9 +34,9 @@ function readUsers(req, res){
 //reads a single user with phone param
 //urlparams: GET:/api/v0.1/users/:id
 function readUser(req, res){
-  User.model.find({_id:req.params.id}, function(err, user){
+  User.model.findOne({_id:req.params.id}, function(err, user){
     if(err) res.send({status:400, data:null, message:err});
-    else res.send({status:200, data:user, message:user.email+" Fetched"})
+    return res.send({user:user})
   });
 }
 //deletes a user
@@ -44,7 +44,7 @@ function readUser(req, res){
 function deleteUser(req, res){
   User.model.findOne({_id:req.params.id}).remove(function(err){
     if(err) res.send({status:400, data:null, message:err});
-    else res.send({status:200, data:null, message:req.params.email+" Removed"});
+    else res.send({response:'deleted '+ req.params.id});
   });
 }
 //deletes all users
@@ -71,7 +71,7 @@ function loginUser(req, res){
         return res.send({status:200, data:{login:false}, message:req.params.phone+" login attempt 3"})
       }
     }
-  } 
+  }
   return res.send({status:200, data:{login:true}, message:req.params.phone+" login attempt 4"})
   });
 }

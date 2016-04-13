@@ -7,16 +7,13 @@ var boot = require('../bin/www').boot,
 var userid;
 
 describe('users', function () {
-  before(function () {
-    boot();
-  });
-
   describe('create', function(){
     it('should create a temp user', function(done){
       superagent
         .post('http://localhost:'+port+'/api/users')
         .send({
-          'email':'testlist@gmail.com'
+          'email':'testlist@gmail.com',
+          'password':'dog'
         })
         .end(function(err, res){
           if(err) done(err)
@@ -39,21 +36,6 @@ describe('users', function () {
         })
     })
   })
-  describe('edit', function(){
-    it('should edit the user information', function(done){
-      superagent
-        .post('http://localhost:'+port+'/api/users/'+userid)
-        .send({
-          'email':'edit2@gmail.com'
-        })
-        .end(function(err,res){
-          if(err) done(err)
-          expect(res.status).to.equal(200);
-          expect(res.body.user.email).to.equal('edit2@gmail.com');
-          done();
-        })
-    })
-  })
   describe('delete', function(){
     it('should delete the user', function(done){
       superagent
@@ -67,9 +49,6 @@ describe('users', function () {
     })
   })
 
-  after(function () {
-    shutdown();
-  });
 });
 
 
