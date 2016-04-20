@@ -6,12 +6,15 @@ var Question = new QuestionSchema({
   explain: String,
   type: String,
   stats:{
-    total: Number, 
+    total: Number,
   },
   history: [{//if a user finishes this question then he will appear in history
-      id: String, 
+      id: String,
       time : String
-  }]
+  }],
+  tags: String,
+  createdAt: { type:Date, default: Date.now },
+  createdby: String
 });
 
 module.exports.model = mongoose.model("question_graphwhy", Question);

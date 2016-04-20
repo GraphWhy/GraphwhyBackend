@@ -12,7 +12,8 @@ function createUser(req, res){
   var encryptedPasswordInput = require('crypto').createHash('md5').update(req.body.password).digest('hex');
   var tempUser = new User.model({
     email: req.body.email,
-    password: encryptedPasswordInput
+    password: encryptedPasswordInput,
+    admin: false
   });
   tempUser.save(function(err, data){
     if(err) res.send({status:400, data:null, message:err});
@@ -42,6 +43,8 @@ function readUser(req, res){
 //deletes a user
 //urlparams: DELETE:/api/v0.1/users/:id
 function deleteUser(req, res){
+  if(!req.user) return res.send({error:'no login'})
+  if(!req.user.admin) return res.send({error:'no admin'});
   User.model.findOne({_id:req.params.id}).remove(function(err){
     if(err) res.send({status:400, data:null, message:err});
     else res.send({response:'deleted '+ req.params.id});
@@ -50,10 +53,13 @@ function deleteUser(req, res){
 //deletes all users
 //urlparams: DELETE:/api/v0.1/users/
 function deleteUsers(req, res){
+  if(!req.user) return res.send({error:'no login'})
+  if(!req.user.admin) return res.send({error:'no admin'});
   req.session.reset();
   User.model.remove().exec();
   res.send({status:200, data:null, message:"Deleted "+User});
 }
+
 
 function loginUser(req, res){
   User.model.findOne({email:req.body.email}, function(err, user){
@@ -83,13 +89,19 @@ function checkUser(req, res){
   }
 }
 
+function logoutUser(req, res){
+  req.session.reset();
+  res.send('done')
+}
+
 //crud user
 router.post('/', createUser);
 router.post('/login', loginUser);
+router.get('/logout', logoutUser);
 router.get('/', readUsers);
 router.get('/check', checkUser);
 router.get('/:id', readUser);
-router.delete('/', deleteUsers);
+//router.delete('/', deleteUsers);
 router.delete('/:id', deleteUser);
 
 

@@ -7,51 +7,56 @@
     <script src="/javascripts/angular.min.js"></script>
     <script src="/javascripts/client-angular.js"></script>
   </head>
-  <body ng-controller="mainctrl">
-    <form action="/api/lists" method="post">
-      title:<input type="text" name="title"><br/>
-      description:<input type="text" name="description"><br/>
-      <input type="submit" value="create list">
-    </form>
-  <div ng-repeat="v in lists track by $index">
-  <br/>
-    <form action="{{ '/api/lists/delete/'+v._id }}" method="get">
-      list title:{{v.title}}<br/>
-      list description:{{v.description}}<br/><input type="submit" value="x">
-    </form>
-    <ul>
-    <div ng-repeat="c in v.questions track by $index">
-      <br/>
-      
-      question title:{{c.title}} <br/>
-      question description:{{c.description}} <br/>
-      <div ng-repeat="x in c.answers track by $index">
-      <ul>
-        <li>options:{{x.answer}} votes:{{x.votes}}</li>
-      <ul>
-      </div>
+  <body ng-controller="mainctrl" ng-cloak>
+    <div ng-show="!loggedin">
+        email<input id="ele_email" type="input"/><br/>
+        password<input id="ele_password" type="password"/>
+        <button ng-click="login()">login</button>
     </div>
-    
-    <br/>
-    <li>
-    <form action="/api/lists/question" method="post">
-      <input type="text" name="_id" value="{{ v._id }}" style="display:none;">
-      question name:<input type="text" name="title"><br/>
-      question description:<input type="text" name="description"><br/>
-      option:<input type="text" name="option[]"><button type="button" onclick="add(this)">+</button><br/>
-      <input type="submit" value="add question">
-    </form>
-    </li>
-    </ul>
-  </div>
+    <div ng-show="loggedin" ng-controller="tagsnquestionsctrl">
+        <button ng-click="logout()">logout</button>
+        <div >
+          <br/>Tags
+          <ul>
+            <li ng-repeat="t in tags">{{t}}<button ng-click="deleteTag(t._id)">delete</button></li>
+            <li>
+            <input id="ele_title"/>
+            <button ng-click="createTag()">create</button>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <br/>Questions
+          <ul>
+            <li ng-repeat="q in questions">
+            {{q}}<br/>
+             <button ng-click="deleteQuestion(q._id)">delete</button>
+             </li>
 
+
+            <li>
+            prompt<input id="ele_prompt"/><br/>
+
+            explain<input id="ele_explain"/><br/>
+
+            tag
+            <select id="ele_option">
+            <option ng-repeat="t in tags">{{t.title}}</option>
+            </select><br/>
+
+            answer<input name="option[]"/>
+            <button onclick="add(this)"> + </button><br/>
+
+            <button ng-click="createQuestion()">create</button>
+            </li>
+          </ul>
+        </div>
+    </div>
+  </div>
   </body>
   <script>
   function add(elem){
-    $(elem).before('<br/>option:<input type="text" name="option[]">')
-  }
+      $(elem).before('<br/>answer<input type="text" name="option[]">')
+    }
   </script>
 </html>
-
-
-

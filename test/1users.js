@@ -11,7 +11,7 @@ describe('users, tags, and questions', function () {
   describe('create', function(){
     it('should create a temp user', function(done){
       superagent
-        .post('http://localhost:'+port+'/api/users')
+        .post('http://localhost:'+port+'/api/user')
         .send({
           'email':'testlist@gmail.com',
           'password':'dog'
@@ -28,7 +28,7 @@ describe('users, tags, and questions', function () {
   describe('show', function(){
     it('should show the user information', function(done){
       superagent
-        .get('http://localhost:'+port+'/api/users/'+userid)
+        .get('http://localhost:'+port+'/api/user/'+userid)
         .end(function(err,res){
           if(err) done(err)
           expect(res.status).to.equal(200);
@@ -41,7 +41,7 @@ describe('users, tags, and questions', function () {
   describe('login', function(){
     it('should login user', function(done){
       superagent
-        .post('http://localhost:'+port+'/api/users/login')
+        .post('http://localhost:'+port+'/api/user/login')
         .send({
           'email':'testlist@gmail.com',
           'password':'dog'
@@ -58,7 +58,7 @@ describe('users, tags, and questions', function () {
   describe('checklogin', function(){
     it('should attempt login and return true', function(done){
       var req = superagent
-        .get('http://localhost:'+port+'/api/users/check')
+        .get('http://localhost:'+port+'/api/user/check')
 
       req.cookies = Cookies;
       req.end(function(err, res){
@@ -210,7 +210,7 @@ describe('users, tags, and questions', function () {
   describe('delete', function(){
     it('should delete the user', function(done){
       superagent
-        .del('http://localhost:'+port+'/api/users/'+userid)
+        .del('http://localhost:'+port+'/api/user/'+userid)
         .end(function(err, res){
           if(err) done(err)
           expect(res.status).to.equal(200);
