@@ -5,7 +5,7 @@
  */
 
 var app = require('../app');
-var debug = require('debug')('graphwhybackend:server');
+var debug = require('debug')('thepeninsulateam:server');
 var http = require('http');
 
 /**
@@ -21,29 +21,11 @@ app.set('port', port);
 
 var server = http.createServer(app);
 
-var boot = function () {
-  server.listen(app.get('port'), function(){
-    console.info('Express server listening on port ' + app.get('port'));
-  });
-}
-var shutdown = function() {
-  server.close();
-}
-
-if (require.main === module) {
-  boot();
-}
-else {
-  console.info('Running app as a module')
-  exports.boot = boot;
-  exports.shutdown = shutdown;
-  exports.port = app.get('port');
-}
-
 /**
  * Listen on provided port, on all network interfaces.
  */
 
+server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
