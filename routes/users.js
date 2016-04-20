@@ -50,44 +50,45 @@ function deleteUser(req, res){
 //deletes all users
 //urlparams: DELETE:/api/v0.1/users/
 function deleteUsers(req, res){
+  req.session.reset();
   User.model.remove().exec();
   res.send({status:200, data:null, message:"Deleted "+User});
 }
 
 function loginUser(req, res){
-  User.model.findOne({_id:req.params.id}, function(err, user){
-  if(err){
-    return res.send({status:200, data:{login:false}, message:req.params.phone+" login attempt 1"})
-  }else{
-    if(!user){
-      return res.send({status:200, data:{login:false}, message:req.params.phone+" login attempt 2"})
+  User.model.findOne({email:req.body.email}, function(err, user){
+    if(err){
+      return res.send({status:200, data:{login:false}, message:" login attempt 1"})
     }else{
-      var p = require('crypto').createHash('md5').update(req.body.password).digest('hex');
-      if(p==user.password){
-        req.session.user = user;
+      if(!user){
+        return res.send({status:200, data:{login:false}, message:" login attempt 2"})
       }else{
-        return res.send({status:200, data:{login:false}, message:req.params.phone+" login attempt 3"})
+        var p = require('crypto').createHash('md5').update(req.body.password).digest('hex');
+        if(p==user.password){
+          req.session.user = user;
+          return res.send({status:200, data:{login:true}, message:" login attempt 4"})
+        }else{
+          return res.send({status:200, data:{login:false}, message:" login attempt 3"})
+        }
       }
     }
-  }
-  return res.send({status:200, data:{login:true}, message:req.params.phone+" login attempt 4"})
   });
 }
 
 function checkUser(req, res){
-  if(req.user){
-    return res.send({logged:'true'})
+  if(!req.user){
+    return res.send({logged:false})
   }else{
-    return res.send({logged:'false'})
+    return res.send({logged:true})
   }
 }
 
 //crud user
 router.post('/', createUser);
+router.post('/login', loginUser);
 router.get('/', readUsers);
 router.get('/check', checkUser);
 router.get('/:id', readUser);
-router.post('/:id', loginUser);
 router.delete('/', deleteUsers);
 router.delete('/:id', deleteUser);
 

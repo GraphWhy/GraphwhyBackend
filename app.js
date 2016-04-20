@@ -7,9 +7,12 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose')
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var questions = require('./routes/questions');
 var fb = require('./routes/fb');
 var tags = require('./routes/tags')
 var session = require('client-sessions');
+
+var User = require('./models/user.js');
 var app = express();
 
 // view engine setup
@@ -23,12 +26,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
 app.use(session({
   cookieName: 'session',
   secret: 'flklf;k43f;l43k21s12j112e21',
   duration: 30*60*1000,
   activeDuration: 5 * 60 * 1000,
 }));
+
 app.use(function(req,res,next){
   if(req.session && req.session.user){
     User.model.findOne({ _id: req.session.user._id }, function(err,user){
@@ -44,6 +49,7 @@ app.use(function(req,res,next){
     next();
   }
 });
+
 mongoose.connect( "mongodb://localhost:27017/" , function (err, res) {
   if (err) {
   console.log ('Could not connect to mongodb://localhost:27017/' + err);
@@ -54,8 +60,8 @@ mongoose.connect( "mongodb://localhost:27017/" , function (err, res) {
 app.use('/', routes);
 app.use('/api/users', users);
 app.use('/api/fb', fb);
-
 app.use('/api/tag', tags);
+app.use('/api/question', questions)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
