@@ -1,0 +1,16 @@
+<testsuite name="Mocha Tests" tests="14" failures="0" errors="0" skipped="0" timestamp="2016-04-20T10:04:37" time="0.403">
+<testcase classname="server homepage" name="should respond to GET" time="0.077"/>
+<testcase classname="users, tags, and questions create" name="should create a temp user" time="0.092"/>
+<testcase classname="users, tags, and questions show" name="should show the user information" time="0.031"/>
+<testcase classname="users, tags, and questions login" name="should login user" time="0.017"/>
+<testcase classname="users, tags, and questions checklogin" name="should attempt login and return true" time="0.016"/>
+<testcase classname="users, tags, and questions create" name="should fail to create tag due to no login" time="0.008"/>
+<testcase classname="users, tags, and questions create" name="should create a tag after using session cookie" time="0.018"/>
+<testcase classname="users, tags, and questions show" name="should show the tag" time="0.013"/>
+<testcase classname="users, tags, and questions delete" name="should delete the tag" time="0.01"/>
+<testcase classname="users, tags, and questions create" name="should fail to create a question due to no login" time="0.007"/>
+<testcase classname="users, tags, and questions create" name="should create a question" time="0.02"/>
+<testcase classname="users, tags, and questions show" name="should show the question" time="0.017"/>
+<testcase classname="users, tags, and questions delete" name="should delete the question" time="0.007"/>
+<testcase classname="users, tags, and questions delete" name="should delete the user" time="0.013"/>
+</testsuite>
