@@ -12,7 +12,7 @@ var Question = new QuestionSchema({
       id: String,
       time : String
   }],
-  tags: String,
+  tags: [String],
   createdAt: { type:Date, default: Date.now },
   createdby: String
 });

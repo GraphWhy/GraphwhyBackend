@@ -6,6 +6,7 @@
     <script src="/javascripts/jquery.min.js"></script>
     <script src="/javascripts/angular.min.js"></script>
     <script src="/javascripts/client-angular.js"></script>
+    <script src="/javascripts/tagsandquestionsctrl.js"></script>
   </head>
   <body ng-controller="mainctrl" ng-cloak>
     <div ng-show="!loggedin">
@@ -39,11 +40,10 @@
 
             explain<input id="ele_explain"/><br/>
 
-            tag
-            <select id="ele_option">
-            <option ng-repeat="t in tags">{{t.title}}</option>
-            </select><br/>
-
+            tags: <span ng-repeat="t in tagsUsed track by $index">{{t.title}}<button ng-click="removeTagUsed($index)">x</button></span><br/>
+            <input type="text" ng-model="search"/><br/>
+            <span ng-repeat="t in tagArray | filter:search"><button ng-click="addTagUsed(t)">{{t.title}}</button></span>
+            <br/>
             answer<input name="option[]"/>
             <button onclick="add(this)"> + </button><br/>
 
@@ -60,3 +60,7 @@
     }
   </script>
 </html>
+
+<div ng-repeat="(key, value) in myObj | filter:search">
+  {{ key }} : {{ value }}
+</div>
