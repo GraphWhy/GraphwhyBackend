@@ -3,6 +3,7 @@ var TagSchema = mongoose.Schema;
 var Tag = new TagSchema({
   title: String,
   createdby: String,
+  questions: [String],
   createdAt: { type:Date, default: Date.now }
 });
 

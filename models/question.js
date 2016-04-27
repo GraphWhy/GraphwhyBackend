@@ -3,6 +3,7 @@ var QuestionSchema = mongoose.Schema;
 var Question = new QuestionSchema({
   prompt: String,
   answers: [String],
+  votes: [Number],
   explain: String,
   type: String,
   stats:{
