@@ -1,7 +1,11 @@
 var mongoose = require('mongoose');
 var UserSchema = mongoose.Schema;
 var User = new UserSchema({
-  email: String,
+  email: {
+        type: String,
+        unique: true,
+        index: true
+    },
   admin: Boolean,
   password: String,
   createdAt: { type:Date, default: Date.now },

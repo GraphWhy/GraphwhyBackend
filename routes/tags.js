@@ -1,6 +1,8 @@
 var express = require('express');
 var Tag = require('../models/tag.js');
 var Question = require('../models/question.js');
+var Response = require('../models/response.js');
+
 var router = express.Router();
 
 function createTag(req, res){
@@ -16,7 +18,6 @@ function createTag(req, res){
 }
 
 function readTags(req, res){
-  res.header("Access-Control-Allow-Origin", "*");
   Tag.model.find({},function(err, users){
     var userMap = {};
     users.forEach(function(user){
@@ -28,7 +29,6 @@ function readTags(req, res){
 }
 
 function readTag(req, res){
-  res.header("Access-Control-Allow-Origin", "*");
   Tag.model.findOne({_id:req.params._id},function(err, data){
     if(err) return res.send(err);
     return res.send(data);
@@ -36,7 +36,6 @@ function readTag(req, res){
 }
 
 function readTagbyNum(req, res){
-  res.header("Access-Control-Allow-Origin", "*");
   Tag.model.findOne({_id:req.params._id}, function(err,data){
     if(req.params.num>=data.questions.length) return res.send('error');
     Question.model.findOne({_id:data.questions[req.params.num]}, function(err,question){
@@ -44,7 +43,6 @@ function readTagbyNum(req, res){
     });
   })
 }
-
 
 function deleteTag(req, res){
   if(!req.user.admin) return res.send({error:'no admin'});
@@ -61,10 +59,40 @@ function deleteTags(req, res){
   res.send({status:200, data:null, message:"Deleted all"});
 }
 
+function getQuestion(req, res){
+  var hit = false;
+  if(!req.user) return res.send({error:'no login'})
+  Response.model.find({user: req.user._id}, function (err, respns) {
+    if(err) return res.send(err);
+    if(!respns) return res.send('no response');
+    Tag.model.findOne({title:req.params._id}, function(err, tag){
+      if(!tag) return res.send('no tag');
+      for(var z = 0; z < tag.questions.length; z++){
+        var matched = false;
+        for(var i = 0; i < respns.length; i++){
+          if(tag.questions[z] == respns[i].question){
+            matched = true;
+          }
+        }
+        if(!matched && !hit){
+          hit = true;
+          Question.model.findOne({_id:tag.questions[z]}, function(err, question){
+            if(err) return res.send(err)
+            if(!question) return es.send('no question');
+            return res.send(question)
+          });
+        }
+      }
+      if(!hit) return res.send('finished set')
+    })
+  });
+}
+
+router.get('/:_id', getQuestion);
 router.delete('/:_id', deleteTag);
 router.delete('/', deleteTags);
-router.get('/:_id', readTag);
-router.get('/:_id/:num', readTagbyNum);
+//router.get('/:_id', readTag);
+//router.get('/:_id/:num', readTagbyNum);
 router.post('/', createTag);
 router.get('/', readTags);
 

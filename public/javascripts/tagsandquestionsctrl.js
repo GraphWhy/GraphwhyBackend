@@ -47,6 +47,7 @@ app.controller('tagsnquestionsctrl', function($scope, $http, $location, $http){
   }
   $scope.deleteTag = function(_id){
     $http.delete(url+"tag/"+_id).success(function(data){
+      console.log(data)
       $scope.updateTags();
     })
   }

@@ -1,6 +1,6 @@
 var express = require('express');
 var User = require('../models/user.js');
-
+var Response = require('../models/response.js');
 var router = express.Router();
 
 
@@ -8,16 +8,21 @@ var router = express.Router();
 //urlparams: POST:/api/users/
 //post: 'email', 'password'
 function createUser(req, res){
-  //TODO: check if valid input
-  var encryptedPasswordInput = require('crypto').createHash('md5').update(req.body.password).digest('hex');
-  var tempUser = new User.model({
-    email: req.body.email,
-    password: encryptedPasswordInput,
-    admin: false
-  });
-  tempUser.save(function(err, data){
-    if(err) res.send({status:400, data:null, message:err});
-    return res.send({user:data})
+    User.model.find({email: req.body.email}, function (err, docs) {
+    if (docs.length){
+        return res.send('already used')
+    }else{
+      var encryptedPasswordInput = require('crypto').createHash('md5').update(req.body.password).digest('hex');
+      var tempUser = new User.model({
+        email: req.body.email,
+        password: encryptedPasswordInput,
+        admin: false
+      });
+      tempUser.save(function(err, data){
+        if(err) res.send({status:400, data:null, message:err});
+        return res.send({user:data})
+      });
+    }
   });
 }
 //prints out all users
@@ -35,9 +40,9 @@ function readUsers(req, res){
 //reads a single user with phone param
 //urlparams: GET:/api/v0.1/users/:id
 function readUser(req, res){
-  User.model.findOne({_id:req.params.id}, function(err, user){
-    if(err) res.send({status:400, data:null, message:err});
-    return res.send({user:user})
+  Response.model.find({user:req.user._id}, function(err,responses){
+    if(err) return res.send(err)
+    return res.send(responses);
   });
 }
 //deletes a user
@@ -100,7 +105,7 @@ router.post('/login', loginUser);
 router.get('/logout', logoutUser);
 router.get('/', readUsers);
 router.get('/check', checkUser);
-router.get('/:id', readUser);
+router.get('/questions', readUser);
 //router.delete('/', deleteUsers);
 router.delete('/:id', deleteUser);
 
