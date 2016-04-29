@@ -1,6 +1,7 @@
 var express = require('express');
 var Question = require('../models/question.js');
 var Tag = require('../models/tag.js');
+var Response = require('../models/response.js')
 
 var router = express.Router();
 
@@ -40,6 +41,19 @@ function readQuestions(req, res){
     else return res.send({status:200, data:userMap, message:"Fetching Questions"});
   });
 }
+
+function readResponses(req, res){
+  res.header("Access-Control-Allow-Origin", "*");
+  Response.model.find({},function(err, users){
+    var userMap = {};
+    users.forEach(function(user){
+      userMap[user._id] = user;
+    })
+    if(err) return res.send({status:400, data:null, message:err});
+    else return res.send({status:200, data:userMap, message:"Fetching Questions"});
+  });
+}
+
 function readQuestion(req, res){
   res.header("Access-Control-Allow-Origin", "*");
   Question.model.findOne({_id:req.params._id},function(err, data){
@@ -64,25 +78,48 @@ function deleteQuestions(req, res){
   res.send({status:200, data:null, message:"Deleted all"});
 }
 
-function voteQuestion(req, res){
-  Question.model.findOne({_id:req.params._id},function(err, question){
-    var answer = parseInt(req.params.answer);
-    if(answer < question.votes.length && answer > -1) question.votes[answer] += 1;
-    else return res.send({status:400, data:null, message:'out of bound vote number'})
 
-    question.markModified('votes');
-    question.save(function(err){
-      if(err) return res.send({status:400, data:null, message:err});
-      return res.send({question:"ok"})
-    });
+function voteQuestion(req, res){
+  if(!req.user) return res.send({error:'no login'})
+  Response.model.find({user: req.user._id, question:req.params._id}, function (err, docs) {
+    if (docs.length){
+        return res.send('aready voted')
+    }else{
+      var answer = parseInt(req.params.answer);
+      Question.model.findOne({_id:req.params._id},function(err, question){
+        if(err) return res.send(err);
+        if(!question) return res.send('no question')
+        if(answer < question.votes.length && answer > -1){
+          var tempResponse = new Response.model({
+            vote: answer,
+            user: req.user._id,
+            question: question._id,
+          });
+          tempResponse.save(function(err){
+            if(err) return res.send({status:400, data:null, message:err});
+            question.votes[answer] += 1;
+            question.markModified('votes');
+            question.save(function(err2){
+              if(err2) return res.send({status:400, data:null, message:err2});
+              return res.send({question:"ok"})
+            });
+          })
+         }else{
+            return res.send({status:400, data:null, message:'out of bound vote number'})
+         }
+      });
+    }
   });
 }
 
+
+router.get('/response', readResponses);
 router.get('/vote/:_id/:answer', voteQuestion);
 router.delete('/:_id', deleteQuestion);
 router.get('/:_id', readQuestion);
 router.delete('/', deleteQuestions);
 router.post('/', createQuestion);
 router.get('/', readQuestions);
+
 
 module.exports = router;
