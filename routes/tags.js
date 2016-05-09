@@ -118,6 +118,7 @@ function fixTagBug(req,res){
 }
 
 router.get('/:_id', getQuestion);
+router.get('/fixTagBug/:_id', fixTagBug);
 router.delete('/:_id', deleteTag);
 router.delete('/', deleteTags);
 //router.get('/:_id', readTag);
