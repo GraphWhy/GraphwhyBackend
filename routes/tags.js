@@ -88,6 +88,35 @@ function getQuestion(req, res){
   });
 }
 
+function fixTagBug(req,res){
+  Tag.model.findOne({title:req.params._id}, function(err, tag){
+    if(err) return res.send(err)
+    if(!tag) return res.send('no tag');
+    var trash = [];
+    var promises = [];
+    for(var z = 0; z < tag.questions.length; z++){
+      promises.push(function(){
+        return Question.model.findOne({_id:tag.questions[z]}, function(err, question){
+          if(err){ 
+            trash.push(tag.questions[z])
+            return false;
+          }
+          if(!question){
+             trash.push(tag.questions[z])
+             return false;
+         }
+          return true;
+        })
+      })
+    }
+    Promise.all([promises]).then(function(values) { 
+      for(var i = 0; i < trash.length; i++){
+        Question.model.findOne({_id:trash[i]}).remove();
+      }
+    });
+  })
+}
+
 router.get('/:_id', getQuestion);
 router.delete('/:_id', deleteTag);
 router.delete('/', deleteTags);
