@@ -112,9 +112,26 @@ function voteQuestion(req, res){
   });
 }
 
+function addVote(req, res){
+  if(!req.user) return res.send({error:'no login'});
+  Question.model.findOne({_id:req.params._id}, function(err, question){
+    if(err) return res.send(err)
+    if(!question) return res.send('no question');
+    question.answers.push(req.body.option);
+    question.votes.push(0);
+    question.markModified('answers');
+    question.markModified('votes');
+    question.save(function(err2){
+      if(err2) return res.send(err2);
+      return res.send('added')
+    })
+  });
+}
+
 
 router.get('/response', readResponses);
 router.get('/vote/:_id/:answer', voteQuestion);
+router.post('/addvote/:_id', addVote);
 router.delete('/:_id', deleteQuestion);
 router.get('/:_id', readQuestion);
 router.delete('/', deleteQuestions);
