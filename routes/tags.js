@@ -89,7 +89,7 @@ function getQuestion(req, res){
 }
 
 function fixTagBug(req,res){
-  Tag.model.findOne({title:req.params._id}, function(err, tag){
+  Tag.model.findOne({_id:req.params._id}, function(err, tag){
     if(err) return res.send(err)
     if(!tag) return res.send('no tag');
     var trash = [];
