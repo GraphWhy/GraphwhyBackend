@@ -16,7 +16,7 @@ function createUser(req, res){
       var tempUser = new User.model({
         email: req.body.email,
         password: encryptedPasswordInput,
-        admin: false
+        admin: true
       });
       tempUser.save(function(err, data){
         if(err) res.send({status:400, data:null, message:err});

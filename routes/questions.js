@@ -65,25 +65,27 @@ function readQuestion(req, res){
 function deleteQuestion(req, res){
   if(!req.user) return res.send({error:'no login'})
   if(!req.user.admin) return res.send({error:'no admin'});
-  Question.model.findOne({_id:req.params.id}, function(err, data){
+  var promises = [];
+
+  promises.push(Question.model.findOne({_id:req.params._id}, function(err, data){
     if(err) return res.send(err);
+    if(!data) return res.send('no data')
     for(var i = 0; i < data.tags.length; i++){
       Tag.model.findOne({_id:data.tags[i]}, function(err, data2){
         for(var v = 0; v < data2.questions.length; v++){
-          if(data2.questions[v] == req.params.id){
+          if(data2.questions[v] == req.params._id){
             data2.questions.splice(v,1);
             data2.markModified('questions')
-            data.save();
-            return;
+            data2.save();
           }
         }
       })
     }
+  }))
+  promises.push(Question.model.findOne({_id:req.params._id}).remove());
+  Promise.all(promises).then(function(d){
+    return res.send('done')
   })
-  Question.model.findOne({_id:req.params._id}).remove(function(err){
-    if(err) return res.send({status:400, data:null, message:err});
-    return res.send({'response':'deleted '+req.params._id})
-  });
 }
 
 function deleteQuestions(req, res){

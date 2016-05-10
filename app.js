@@ -34,6 +34,7 @@ app.use(session({
   activeDuration: 5 * 60 * 1000,
 }));
 
+
 app.use(function(req,res,next){
   res.header("Access-Control-Allow-Origin", "http://graphwhy.org"); // restrict it to the required domain
   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
