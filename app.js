@@ -35,7 +35,7 @@ app.use(session({
 }));
 
 app.use(function(req,res,next){
-  res.header("Access-Control-Allow-Origin", "http://localhost:8100"); // restrict it to the required domain
+  res.header("Access-Control-Allow-Origin", "http://graphwhy.org"); // restrict it to the required domain
   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
   res.header("Access-Control-Allow-Credentials","true");
   res.header("Access-Control-Allow-Headers", "Content-type,Accept,X-Custom-Header");
