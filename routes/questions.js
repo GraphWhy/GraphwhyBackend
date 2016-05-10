@@ -79,10 +79,10 @@ function deleteQuestion(req, res){
             data2.save();
           }
         }
+        Question.model.findOne({_id:req.params._id}).remove()
       })
     }
   }))
-  promises.push(Question.model.findOne({_id:req.params._id}).remove());
   Promise.all(promises).then(function(d){
     return res.send('done')
   })
