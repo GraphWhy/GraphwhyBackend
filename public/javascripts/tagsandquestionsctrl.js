@@ -1,7 +1,8 @@
 (function(){
 var app = angular.module('myApp');
 
-var url = "http://localhost:3010/api/";
+var url = "http://107.170.248.208:3010/api/";
+
 
 app.controller('tagsnquestionsctrl', function($scope, $http, $location, $http){
   $scope.tags = [];
