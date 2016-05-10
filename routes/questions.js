@@ -71,7 +71,7 @@ function deleteQuestion(req, res){
       Tag.model.findOne({_id:data.tags[i]}, function(err, data2){
         for(var v = 0; v < data2.questions.length; v++){
           if(data2.questions[v] == req.params.id){
-            data2.questions.splice(i,1);
+            data2.questions.splice(v,1);
             data2.markModified('questions')
             data.save();
             return;
