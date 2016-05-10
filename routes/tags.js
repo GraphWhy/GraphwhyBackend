@@ -88,37 +88,26 @@ function getQuestion(req, res){
   });
 }
 
-function fixTagBug(req,res){
+function spliceTag(req,res){
   Tag.model.findOne({_id:req.params._id}, function(err, tag){
     if(err) return res.send(err)
     if(!tag) return res.send('no tag');
-    var trash = [];
-    var promises = [];
-    for(var z = 0; z < tag.questions.length; z++){
-      promises.push(function(){
-        return Question.model.findOne({_id:tag.questions[z]}, function(err, question){
-          if(err){ 
-            trash.push(tag.questions[z])
-            return false;
-          }
-          if(!question){
-             trash.push(tag.questions[z])
-             return false;
-         }
-          return true;
+    for(var i = 0; i < tag.questions.length; i++){
+      if(req.params._id2 == tag.questions[i]){
+        tag.questions.splice(i,1);
+        tag.markModified('questions');
+        tag.save(function(err,data){
+          if(err) return res.send(err)
+          return res.send('found and deleted')
         })
-      })
-    }
-    Promise.all([promises]).then(function(values) { 
-      for(var i = 0; i < trash.length; i++){
-        Question.model.findOne({_id:trash[i]}).remove();
       }
-    });
+    }
+    return res.send('could not find')
   })
 }
 
 router.get('/:_id', getQuestion);
-router.get('/fixTagBug/:_id', fixTagBug);
+router.get('/splice/:_id/:_id2', fixTagBug);
 router.delete('/:_id', deleteTag);
 router.delete('/', deleteTags);
 //router.get('/:_id', readTag);
