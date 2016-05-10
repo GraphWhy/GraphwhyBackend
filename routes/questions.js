@@ -65,6 +65,21 @@ function readQuestion(req, res){
 function deleteQuestion(req, res){
   if(!req.user) return res.send({error:'no login'})
   if(!req.user.admin) return res.send({error:'no admin'});
+  Question.model.findOne({_id:req.params.id}, function(err, data){
+    if(err) return res.send(err);
+    for(var i = 0; i < data.tags.length; i++){
+      Tag.model.findOne({_id:data.tags[i]}, function(err, data2){
+        for(var v = 0; v < data2.questions.length; v++){
+          if(data2.questions[v] == req.params.id){
+            data2.questions.splice(i,1);
+            data2.markModified('questions')
+            data.save();
+            return;
+          }
+        }
+      })
+    }
+  })
   Question.model.findOne({_id:req.params._id}).remove(function(err){
     if(err) return res.send({status:400, data:null, message:err});
     return res.send({'response':'deleted '+req.params._id})
