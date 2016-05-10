@@ -107,7 +107,7 @@ function spliceTag(req,res){
 }
 
 router.get('/:_id', getQuestion);
-router.get('/splice/:_id/:_id2', fixTagBug);
+router.get('/splice/:_id/:_id2', spliceTag);
 router.delete('/:_id', deleteTag);
 router.delete('/', deleteTags);
 //router.get('/:_id', readTag);
