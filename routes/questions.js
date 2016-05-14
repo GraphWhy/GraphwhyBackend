@@ -7,16 +7,24 @@ var router = express.Router();
 
 function createQuestion(req, res){
   if(!req.user) return res.send({error:'no login'});
-  var votes = new Array(req.body.answers.length);
-  for (var i = votes.length-1; i >= 0; -- i) votes[i] = 0;
+
   var tempQuestion = new Question.model({
     'prompt': req.body.prompt,
     'explain': req.body.explain,
     'createdby' : req.user._id,
-    'tags' : req.body.tags,
-    'answers' : req.body.answers,
-    'votes' : votes
-  });
+    'tags' : req.body.tags
+  }); 
+
+  for(var i = 0; i < req.body.answers.length; i++){
+    var tempobj = {
+      title: req.body.answers[i],
+      votes: 0,
+      created: Date.now
+    };
+  }
+  console.log(tempQuestion)
+
+
   for(var i = 0; i < tempQuestion.tags.length; i++){
     Tag.model.findOne({_id:tempQuestion.tags[i]}, function(err, tag){
       tag.questions.push(tempQuestion._id);
@@ -79,11 +87,13 @@ function deleteQuestion(req, res){
             data2.save();
           }
         }
-        Question.model.findOne({_id:req.params._id}).remove()
       })
     }
   }))
   Promise.all(promises).then(function(d){
+    Question.model.findOne({_id:req.params._id}).remove(function(err){
+      console.log(err)
+    });
     return res.send('done')
   })
 }

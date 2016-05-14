@@ -2,8 +2,7 @@ var mongoose = require('mongoose');
 var QuestionSchema = mongoose.Schema;
 var Question = new QuestionSchema({
   prompt: String,
-  answers: [String],
-  votes: [Number],
+  answers: [Object],
   explain: String,
   type: String,
   stats:{

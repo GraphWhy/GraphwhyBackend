@@ -55,6 +55,7 @@ app.controller('tagsnquestionsctrl', function($scope, $http, $location, $http){
 
   $scope.deleteQuestion = function(_id){
     $http.delete(url+"question/"+_id).success(function(data){
+      console.log(data)
       $scope.updateQuestions();
     })
   }
@@ -68,11 +69,12 @@ app.controller('tagsnquestionsctrl', function($scope, $http, $location, $http){
     var _prompt = $('#ele_prompt').val();
     var _explain = $('#ele_explain').val();
     var _tag = $scope.TagsUsedToIdArray();
+    
     jQuery("input[name='option[]']").each(function() {
-      _arr.push( this.value  );
+      _arr.push( this.value );
     });
     $http.post(url+"question", {
-      prompt:_prompt,
+      prompt: _prompt,
       explain: _explain,
       answers: _arr,
       tags: _tag
