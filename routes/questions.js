@@ -14,15 +14,23 @@ function createQuestion(req, res){
     'createdby' : req.user._id,
     'tags' : req.body.tags
   }); 
-
+  var tempArr =[];
   for(var i = 0; i < req.body.answers.length; i++){
     var tempobj = {
       title: req.body.answers[i],
       votes: 0,
       created: Date.now
     };
+
+    Question.model.findByIdAndUpdate(
+        tempQuestion._id,
+        {$push: {"answers": tempobj}},
+        {safe: true, upsert: true, new : true},
+        function(err, model) {
+            console.log(err);
+        }
+    );
   }
-  console.log(tempQuestion)
 
 
   for(var i = 0; i < tempQuestion.tags.length; i++){
@@ -116,7 +124,7 @@ function voteQuestion(req, res){
       Question.model.findOne({_id:req.params._id},function(err, question){
         if(err) return res.send(err);
         if(!question) return res.send('no question')
-        if(answer < question.votes.length && answer > -1){
+        if(answer < question.answers.length && answer > -1){
           var tempResponse = new Response.model({
             vote: answer,
             user: req.user._id,
@@ -124,8 +132,9 @@ function voteQuestion(req, res){
           });
           tempResponse.save(function(err){
             if(err) return res.send({status:400, data:null, message:err});
-            question.votes[answer] += 1;
-            question.markModified('votes');
+            question.answers[answer].votes += 1;
+            question.markModified('answers');
+
             question.save(function(err2){
               if(err2) return res.send({status:400, data:null, message:err2});
               return res.send({question:"ok"})
@@ -144,14 +153,21 @@ function addVote(req, res){
   Question.model.findOne({_id:req.params._id}, function(err, question){
     if(err) return res.send(err)
     if(!question) return res.send('no question');
-    question.answers.push(req.body.option);
-    question.votes.push(0);
-    question.markModified('answers');
-    question.markModified('votes');
-    question.save(function(err2){
-      if(err2) return res.send(err2);
-      return res.send('added')
-    })
+
+    var tempobj = {
+      title: req.body.option,
+      votes: 0,
+      created: Date.now
+    };
+
+    Question.model.findByIdAndUpdate(
+        question._id,
+        {$push: {"answers": tempobj}},
+        {safe: true, upsert: true, new : true},
+        function(err, model) {
+            res.send('done')
+        }
+    );
   });
 }
 

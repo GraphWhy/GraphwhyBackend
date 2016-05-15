@@ -2,7 +2,11 @@ var mongoose = require('mongoose');
 var QuestionSchema = mongoose.Schema;
 var Question = new QuestionSchema({
   prompt: String,
-  answers: [Object],
+  answers: [{
+    title:String,
+    votes: Number,
+    createdAt: { type:Date, default: Date.now }
+  }],
   explain: String,
   type: String,
   stats:{
@@ -11,7 +15,7 @@ var Question = new QuestionSchema({
   history: [{
       id: String,
       time : String
-  }],
+  }], 
   tags: [String],
   createdAt: { type:Date, default: Date.now },
   createdby: String,

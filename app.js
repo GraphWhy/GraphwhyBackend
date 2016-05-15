@@ -11,7 +11,6 @@ var questions = require('./routes/questions');
 var fb = require('./routes/fb');
 var tags = require('./routes/tags')
 var session = require('client-sessions');
-
 var User = require('./models/user.js');
 var app = express();
 
@@ -36,7 +35,16 @@ app.use(session({
 
 
 app.use(function(req,res,next){
-  res.header("Access-Control-Allow-Origin", "http://graphwhy.org"); 
+  console.log(req.headers.host)
+
+  if(req.headers.host=='localhost:8100'){
+    res.header("Access-Control-Allow-Origin", "localhost:8100"); 
+  }else if(req.headers.host=='127.0.0.1:8100'){
+    res.header("Access-Control-Allow-Origin", "127.0.0.1:8100"); 
+  }else{
+    res.header("Access-Control-Allow-Origin", "http://graphwhy.org"); 
+  }
+  
   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
   res.header("Access-Control-Allow-Credentials","true");
   res.header("Access-Control-Allow-Headers", "Content-type,Accept,X-Custom-Header");
