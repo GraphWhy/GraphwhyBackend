@@ -35,15 +35,7 @@ app.use(session({
 
 
 app.use(function(req,res,next){
-  console.log(req.headers.host)
-
-  if(req.headers.host=='localhost:8100'){
-    res.header("Access-Control-Allow-Origin", "localhost:8100"); 
-  }else if(req.headers.host=='127.0.0.1:8100'){
-    res.header("Access-Control-Allow-Origin", "127.0.0.1:8100"); 
-  }else{
-    res.header("Access-Control-Allow-Origin", "http://graphwhy.org"); 
-  }
+  res.header('Access-Control-Allow-Origin', req.headers.origin);
   
   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
   res.header("Access-Control-Allow-Credentials","true");
