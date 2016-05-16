@@ -15,7 +15,19 @@ function createQuestion(req, res){
     'tags' : req.body.tags
   }); 
   var tempArr =[];
-  for(var i = 0; i < req.body.answers.length; i++){
+
+  for(var i = 0; i < tempQuestion.tags.length; i++){
+    Tag.model.findOne({_id:tempQuestion.tags[i]}, function(err, tag){
+      tag.questions.push(tempQuestion._id);
+      tag.markModified('questions');
+      tag.save();
+    });
+  }
+  console.log(tempQuestion)
+  tempQuestion.save(function(err, data){
+    if(err) return res.send({status:400, data:null, message:err});
+
+    for(var i = 0; i < req.body.answers.length; i++){
     var tempobj = {
       title: req.body.answers[i],
       votes: 0,
@@ -32,16 +44,6 @@ function createQuestion(req, res){
     );
   }
 
-
-  for(var i = 0; i < tempQuestion.tags.length; i++){
-    Tag.model.findOne({_id:tempQuestion.tags[i]}, function(err, tag){
-      tag.questions.push(tempQuestion._id);
-      tag.markModified('questions');
-      tag.save();
-    });
-  }
-  tempQuestion.save(function(err, data){
-    if(err) return res.send({status:400, data:null, message:err});
     return res.send({response:data});
   });
 }
