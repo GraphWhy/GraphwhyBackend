@@ -69,7 +69,8 @@ app.controller('tagsnquestionsctrl', function($scope, $http, $location, $http){
     var _prompt = $('#ele_prompt').val();
     var _explain = $('#ele_explain').val();
     var _tag = $scope.TagsUsedToIdArray();
-    
+    var _type = $('#qtype').val()
+
     jQuery("input[name='option[]']").each(function() {
       _arr.push( this.value );
     });
@@ -77,7 +78,8 @@ app.controller('tagsnquestionsctrl', function($scope, $http, $location, $http){
       prompt: _prompt,
       explain: _explain,
       answers: _arr,
-      tags: _tag
+      tags: _tag,
+      type: _type
     }).success(function(data){
       $scope.updateQuestions();
     })

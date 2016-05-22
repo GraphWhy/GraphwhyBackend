@@ -34,7 +34,6 @@
              <button ng-click="deleteQuestion(q._id)">delete</button>
              </li>
 
-
             <li>
             prompt<input id="ele_prompt"/><br/>
 
@@ -46,7 +45,10 @@
             <br/>
             answer<input name="option[]"/>
             <button onclick="add(this)"> + </button><br/>
-
+            Question type:
+            <select id="qtype">
+              <option value="multiplechoice">multiple choice</option><option value="slider">slider</option>
+            </select><br/>
             <button ng-click="createQuestion()">create</button>
             </li>
           </ul>

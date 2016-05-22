@@ -19,7 +19,8 @@ var Question = new QuestionSchema({
   tags: [String],
   createdAt: { type:Date, default: Date.now },
   createdby: String,
-  responses: [String]
+  responses: [String],
+  type: { type: String, required: true, default: 'multiplechoice' }
 });
 
 module.exports.model = mongoose.model("question_graphwhy", Question);

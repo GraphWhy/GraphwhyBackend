@@ -12,7 +12,8 @@ function createQuestion(req, res){
     'prompt': req.body.prompt,
     'explain': req.body.explain,
     'createdby' : req.user._id,
-    'tags' : req.body.tags
+    'tags' : req.body.tags,
+    'type' : req.body.type
   }); 
   var tempArr =[];
 
@@ -23,29 +24,49 @@ function createQuestion(req, res){
       tag.save();
     });
   }
-  console.log(tempQuestion)
-  tempQuestion.save(function(err, data){
-    if(err) return res.send({status:400, data:null, message:err});
+  if(req.body.type == 'multiplechoice'){
+    tempQuestion.save(function(err, data){
+      if(err) return res.send({status:400, data:null, message:err});
+      for(var i = 0; i < req.body.answers.length; i++){
+      var tempobj = {
+        title: req.body.answers[i],
+        votes: 0,
+        created: Date.now
+      };
 
-    for(var i = 0; i < req.body.answers.length; i++){
-    var tempobj = {
-      title: req.body.answers[i],
-      votes: 0,
-      created: Date.now
-    };
-
-    Question.model.findByIdAndUpdate(
-        tempQuestion._id,
-        {$push: {"answers": tempobj}},
-        {safe: true, upsert: true, new : true},
-        function(err, model) {
-            console.log(err);
-        }
-    );
+      Question.model.findByIdAndUpdate(
+          tempQuestion._id,
+          {$push: {"answers": tempobj}},
+          {safe: true, upsert: true, new : true},
+          function(err, model) {
+              console.log(err);
+          }
+      );
+    }
+      return res.send({response:data});
+    });
+  }else{
+    
+    tempQuestion.save(function(err, data){
+      if(err) return res.send({status:400, data:null, message:err});
+      for(var i = 0; i < 10; i++){
+      var tempobj = {
+        title: i,
+        votes: 0,
+        created: Date.now
+      };
+      Question.model.findByIdAndUpdate(
+          tempQuestion._id,
+          {$push: {"answers": tempobj}},
+          {safe: true, upsert: true, new : true},
+          function(err, model) {
+              console.log(err);
+          }
+      );
+    }
+      return res.send({response:data});
+    });
   }
-
-    return res.send({response:data});
-  });
 }
 
 function readQuestions(req, res){
