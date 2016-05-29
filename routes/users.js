@@ -25,6 +25,8 @@ function createUser(req, res){
     }
   });
 }
+
+
 //prints out all users
 //urlparams: GET:/api/users/
 function readUsers(req, res){

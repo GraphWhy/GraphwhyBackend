@@ -8,5 +8,9 @@ router.get('/', function(req, res, next) {
   res.render('index')
 });
 
+router.get('/:tags', function(req, res, next){
+   res.redirect('http://graphwhy.org/#/app/welcome/'+req.params.tags)
+})
+
 module.exports = router;
 

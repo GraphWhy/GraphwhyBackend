@@ -67,11 +67,13 @@ mongoose.connect( "mongodb://localhost:27017/" , function (err, res) {
   console.log ('Connected to mongodb://localhost:27017/');
 }});
 
+
 app.use('/', routes);
 app.use('/api/user', users);
 app.use('/api/fb', fb);
 app.use('/api/tag', tags);
 app.use('/api/question', questions)
+app.use('/:tags', routes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
