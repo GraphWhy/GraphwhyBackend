@@ -9,7 +9,7 @@ app.controller('tagsnquestionsctrl', function($scope, $http, $location, $http){
   $scope.tagArray = [];
   $scope.questions = [];
   $scope.tagsUsed = [];
-  $scope.search = 'a';
+  $scope.search = 'a'; 
 
   $scope.TagsUsedToIdArray = function(){
     var tempArr = [];

@@ -45,8 +45,7 @@ function createQuestion(req, res){
     }
       return res.send({response:data});
     });
-  }else{
-    
+  }else if (req.body.type == 'slider'){
     tempQuestion.save(function(err, data){
       if(err) return res.send({status:400, data:null, message:err});
       for(var i = 0; i < 10; i++){
@@ -62,6 +61,26 @@ function createQuestion(req, res){
           function(err, model) {
               console.log(err);
           }
+      );
+    }
+      return res.send({response:data});
+    });
+  }else if (req.body.type == 'percent'){
+    tempQuestion.save(function(err, data){
+    if(err) return res.send({status:400, data:null, message:err});
+    for(var i = 1; i < 101; i++){
+    var tempobj = {
+      title: i+'%',
+      votes: 0,
+      created: Date.now
+    };
+    Question.model.findByIdAndUpdate(
+        tempQuestion._id,
+        {$push: {"answers": tempobj}},
+        {safe: true, upsert: true, new : true},
+        function(err, model) {
+            console.log(err);
+        }
       );
     }
       return res.send({response:data});
