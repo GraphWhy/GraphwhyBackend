@@ -78,7 +78,7 @@ function getQuestion(req, res){
           hit = true;
           Question.model.findOne({_id:tag.questions[z]}, function(err, question){
             if(err) return res.send(err)
-            if(!question) return es.send('no question');
+            if(!question) return res.send('no question');
             return res.send(question)
           });
         }

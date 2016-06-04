@@ -120,6 +120,7 @@ function readQuestion(req, res){
   });
 }
 
+
 function deleteQuestion(req, res){
   if(!req.user) return res.send({error:'no login'})
   if(!req.user.admin) return res.send({error:'no admin'});
@@ -139,14 +140,15 @@ function deleteQuestion(req, res){
         }
       })
     }
-  }))
-  Promise.all(promises).then(function(d){
     Question.model.findOne({_id:req.params._id}).remove(function(err){
       console.log(err)
     });
+  }))
+  Promise.all(promises).then(function(d){
     return res.send('done')
   })
 }
+
 
 function deleteQuestions(req, res){
   if(!req.user) return res.send({error:'no login'})
