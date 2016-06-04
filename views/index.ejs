@@ -9,42 +9,59 @@
     <script src="/javascripts/tagsandquestionsctrl.js"></script>
   </head>
   <body ng-controller="mainctrl" ng-cloak>
-    <div ng-show="!loggedin">
-        email<input id="ele_email" type="input"/><br/>
-        password<input id="ele_password" type="password"/>
-        <button ng-click="login()">login</button>
+    <div ng-show="!loggedin" class='signin'>
+        <span>Email</span><br/>
+        <input id="ele_email" type="input"/><br/>
+        <span>Password</span><br/>
+        <input id="ele_password" type="password"/>
+        <br/>
+        <button ng-click="login()">Login</button>
     </div>
-    <div ng-show="loggedin" ng-controller="tagsnquestionsctrl">
+    <div ng-show="loggedin" ng-controller="tagsnquestionsctrl" class="controlPanel">
         <button ng-click="logout()">logout</button>
         <div >
           <br/>Tags
-          <ul>
+          <ol>
             <li ng-repeat="t in tags">{{t}}<button ng-click="deleteTag(t._id)">delete</button></li>
-            <li>
-            <input id="ele_title"/>
-            <button ng-click="createTag()">create</button>
-            </li>
-          </ul>
+          </ol>
+          <input id="ele_title"/>
+          <button ng-click="createTag()">create</button>
         </div>
         <div>
           <br/>Questions
-          <ul>
+          <ol>
             <li ng-repeat="q in questions">
-            {{q}}<br/>
-             <button ng-click="deleteQuestion(q._id)">delete</button>
-             </li>
-
+              {{q}}
+              <br/>
+              <button ng-click="deleteQuestion(q._id)">
+                delete
+              </button>
+            </li>
+          </ol>
+          <ul>
             <li>
-            prompt<input id="ele_prompt"/><br/>
-
-            explain<input id="ele_explain"/><br/>
-
-            tags: <span ng-repeat="t in tagsUsed track by $index">{{t.title}}<button ng-click="removeTagUsed($index)">x</button></span><br/>
-            <input type="text" ng-model="search"/><br/>
-            <span ng-repeat="t in tagArray | filter:search"><button ng-click="addTagUsed(t)">{{t.title}}</button></span>
+              <span>prompt</span>
+              <input id="ele_prompt"/><br/>
+              <span>explain</span>
+              <input id="ele_explain"/><br/>
+              <span>tags: </span>
+              <span ng-repeat="t in tagsUsed track by $index">
+                {{t.title}}
+                <button ng-click="removeTagUsed($index)">
+                  x
+                </button>
+              </span>
+              <br/>
+            <input type="text" ng-model="search"/>
             <br/>
-            answer<input name="option[]"/>
-            <button onclick="add(this)"> + </button><br/>
+            <span ng-repeat="t in tagArray | filter:search">
+              <button ng-click="addTagUsed(t)">{{t.title}}</button>
+            </span>
+            <br/>
+            answer
+            <input name="option[]"/>
+            <button onclick="add(this)"> + </button>
+            <br/>
             Question type:
             <select id="qtype">
               <option value="multiplechoice">multiple choice</option>

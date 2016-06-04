@@ -22,7 +22,7 @@ mongoose.connect( "mongodb://localhost:27017/" , function (err, res) {
 
       var encryptedPasswordInput = require('crypto').createHash('md5').update('pp').digest('hex');
       var tempUser = new User.model({
-        email: 'pp',
+        email: 'Alexander@GraphWhy.org',
         password: encryptedPasswordInput,
         admin: true
       });
