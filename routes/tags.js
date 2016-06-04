@@ -65,7 +65,7 @@ function getQuestion(req, res){
   Response.model.find({user: req.user._id}, function (err, respns) {
     if(err) return res.send(err);
     if(!respns) return res.send('no response');
-    Tag.model.findOne({title:req.params._id}, function(err, tag){
+    Tag.model.findOne({title:req.params._id.split("_").join(" ")}, function(err, tag){
       if(!tag) return res.send('no tag');
       for(var z = 0; z < tag.questions.length; z++){
         var matched = false;
