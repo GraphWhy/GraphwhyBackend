@@ -157,6 +157,13 @@ function deleteQuestions(req, res){
   res.send({status:200, data:null, message:"Deleted all"});
 }
 
+function deleteResponses(req, res){
+  if(!req.user) return res.send({error:'no login'})
+  if(!req.user.admin) return res.send({error:'no admin'});
+  Response.model.remove().exec();
+  res.send({status:200, data:null, message:"Deleted all"});
+}
+
 
 function voteQuestion(req, res){
   if(!req.user) return res.send({error:'no login'})
@@ -220,17 +227,18 @@ function addVote(req, res){
 
 */
 function correlationFinder(req, res){
-  Response.model.find({},function(err, users){
+  Question.model.find({},function(err, users){
     var responses = []
     var fakequestions = [];
 
     users.forEach(function(user){
       responses.push(user);
-      //fakequestions.pushifnotexist(user.question);
+      //fakequestions.pushifnotexist(user._id);
     })
-    /* begin sample data create, creates own questions*//*
+    /* begin sample data create, creates own questions*/
     const questionAmount = 10;
-    const userAmount = 5000;
+    const userAmount = 100;
+    /*
     for(var tempuserindex = 0; tempuserindex < userAmount; tempuserindex++){
       for(var questionindex = 0; questionindex < questionAmount; questionindex++){
         var responseObj = {
@@ -243,11 +251,11 @@ function correlationFinder(req, res){
           createdAt: Date.now()
         }
         //console.log(Math.pow(Math.random(), 2)*10);
-        //responses.push(responseObj)
+        responses.push(responseObj)
       }
     }
     /* end sample data create*/
-    /* begin sample data create, uses own questions*//*
+    /* begin sample data create, uses own questions 
     for(var tempuserindex = 0; tempuserindex < userAmount; tempuserindex++){
       for(var questionindex = 0; questionindex < fakequestions.length; questionindex++){
         var responseObj = {
@@ -280,7 +288,7 @@ function correlationFinder(req, res){
         for(var x = 0; x < stats[v].length; x++){
           if(i!=x){
             if(!statsreal[stats[v][i].q+'-'+stats[v][x].q]){
-              statsreal[stats[v][i].q+'-'+stats[v][x].q] = {}
+              statsreal[stats[v][i].q+'-'+stats[v][x].q] = {[stats[v][i].v]: { [stats[v][x].v] : 1} };
             }            
             else if(!statsreal [stats[v][i].q+'-'+stats[v][x].q][stats[v][i].v]){
               statsreal[stats[v][i].q+'-'+stats[v][x].q][stats[v][i].v] = { [stats[v][x].v] : 1};
@@ -295,6 +303,8 @@ function correlationFinder(req, res){
         }
       }
     }
+
+    var promises = [];
     for(v in statsreal){
       for(x in statsreal[v]){
         var total = 0;
@@ -302,15 +312,37 @@ function correlationFinder(req, res){
           total += statsreal[v][x][z];
         }
         for(z in statsreal[v][x]){
-          statsreal[v][x][z] = parseInt(statsreal[v][x][z]/total*100);
+          var x_id = v.split('-')[0];
+          var z_id = v.split('-')[1];
+
+          var valuex = Question.model.find({$or:[{_id:x_id},{_id:z_id}] }).then(function(data,ve){
+            
+            var promptx = ve[0].prompt ? ve[0].prompt : 'undefined';
+            var promptz = ve[1].prompt ? ve[1].prompt : 'undefined';
+            var votex = ve[0].answers[data[1]] ? ve[0].answers[data[1]].title : 'undefined';
+            var votez = ve[1].answers[data[2]] ? ve[1].answers[data[2]].title : 'undefined';
+
+            statsreal[data[0]][data[1]][data[2]].prompt = 
+            statsreal[data[0]][data[1]][data[2]].percent + 
+            '% of users voted who voted ' + votez + ' in ' + promptz + ' voted for ' + votex + ' in ' + 
+            promptx;
+
+            
+          }.bind(null,[v,x,z,x_id,z_id]));
+
+          promises.push(valuex);
+
+          statsreal[v][x][z] = {
+            prompt: '',
+            percent:parseInt(statsreal[v][x][z]/total*100),
+            amount:statsreal[v][x][z]
+          }
         }
       }
     }
-
-
-
-    if(err) return res.send({status:400, data:null, message:err});
-    else return res.send(statsreal);
+    Promise.all(promises).then(function(d){
+      return res.send(statsreal)
+    })
   });
 }
 
@@ -326,6 +358,7 @@ Array.prototype.pushifnotexist = function(obj){
 
 
 router.get('/correlation', correlationFinder);
+router.get('/deleteresponses', deleteResponses);
 router.get('/response', readResponses);
 router.get('/vote/:_id/:answer', voteQuestion);
 router.post('/addvote/:_id', addVote);
