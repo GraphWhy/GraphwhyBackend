@@ -222,11 +222,8 @@ function addVote(req, res){
   });
 }
 
-/*
-/api/correlation
+var statsreal = {};
 
-*/
-function correlationFinder(req, res){
   Question.model.find({},function(err, users){
     var responses = []
     var fakequestions = [];
@@ -280,8 +277,7 @@ function correlationFinder(req, res){
     for(var r = 0; r < responses.length; r++){
       stats[responses[r].user].push({q:responses[r].question,v:responses[r].vote })
     }
-    
-    var statsreal = {};
+  
 
     for(var v in stats){
       for(var i = 0; i < stats[v].length; i++){
@@ -327,7 +323,6 @@ function correlationFinder(req, res){
             '% of users voted who voted ' + votez + ' in ' + promptz + ' voted for ' + votex + ' in ' + 
             promptx;
 
-            
           }.bind(null,[v,x,z,x_id,z_id]));
 
           promises.push(valuex);
@@ -344,7 +339,11 @@ function correlationFinder(req, res){
       return res.send(statsreal)
     })
   });
+
+function correlationFinder(req, res){
+  res.send(statsreal);
 }
+
 
 /* pushes if unique */
 Array.prototype.pushifnotexist = function(obj){
