@@ -224,7 +224,7 @@ function addVote(req, res){
 
 var statsreal = {};
 
-  Question.model.find({},function(err, users){
+  Response.model.find({},function(err, users){
     var responses = []
     var fakequestions = [];
 
