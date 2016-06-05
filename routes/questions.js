@@ -215,7 +215,147 @@ function addVote(req, res){
   });
 }
 
+/*
+/api/correlation
 
+*/
+function correlationFinder(req, res){
+  Response.model.find({},function(err, users){
+    var responses = []
+    var fakequestions = [];
+
+    users.forEach(function(user){
+      //responses.push(user);
+      fakequestions.pushifnotexist(user.question);
+    })
+    /* begin sample data create, creates own questions*/
+    const questionAmount = 10;
+    const userAmount = 5000;
+    for(var tempuserindex = 0; tempuserindex < userAmount; tempuserindex++){
+      for(var questionindex = 0; questionindex < questionAmount; questionindex++){
+        var responseObj = {
+          //vote: parseInt(Math.pow(Math.random(), 2)*10), //skew random
+          vote: parseInt(Math.random()*10), //complete random
+          user: tempuserindex,
+          question: questionindex,
+          _id: questionindex,
+          _v: 0,
+          createdAt: Date.now()
+        }
+        //console.log(Math.pow(Math.random(), 2)*10);
+        //responses.push(responseObj)
+      }
+    }
+    /* end sample data create*/
+    /* begin sample data create, uses own questions*/
+    for(var tempuserindex = 0; tempuserindex < userAmount; tempuserindex++){
+      for(var questionindex = 0; questionindex < fakequestions.length; questionindex++){
+        var responseObj = {
+          //vote: parseInt(Math.random()*10),
+          vote: parseInt(Math.pow(Math.random(), 2)*10),
+          user: tempuserindex,
+          question: fakequestions[questionindex],
+          _id: questionindex,
+          _v: 0,
+          createdAt: Date.now()
+        }
+        responses.push(responseObj)
+      }
+    }
+    /* end sample data create*/
+    /* begin grab unique question ids in response */
+    var stats = {};
+    for(var r = 0; r < responses.length; r++){
+      stats[ responses[r].user ] =[];
+    } 
+    for(var r = 0; r < responses.length; r++){
+      stats[responses[r].user].push({q:responses[r].question,v:responses[r].vote })
+    }
+    
+    var statsreal = {};
+    /*
+    for(var v in stats){
+      for(var i = 0; i < stats[v].length; i++){
+        for(var x = 0; x < stats[v].length; x++){
+          if(i!=x){
+            if(!statsreal[stats[v][i].q+'-'+stats[v][x].q+'/'+stats[v][i].v+'-'+stats[v][x].v]){
+              statsreal[stats[v][i].q+'-'+stats[v][x].q+'/'+stats[v][i].v+'-'+stats[v][x].v] = 1;
+            }else{
+              statsreal[stats[v][i].q+'-'+stats[v][x].q+'/'+stats[v][i].v+'-'+stats[v][x].v]++;
+            }
+          }
+        }
+      }
+    }
+    *//*
+    for(var v in stats){
+      for(var i = 0; i < stats[v].length; i++){
+        for(var x = 0; x < stats[v].length; x++){
+          if(i!=x){
+            if(!statsreal[stats[v][i].q+'-'+stats[v][x].q]){
+              statsreal[stats[v][i].q+'-'+stats[v][x].q] = {}
+            }            
+            else if(!statsreal[stats[v][i].q+'-'+stats[v][x].q][stats[v][i].v +'-'+ stats[v][x].v]){
+              statsreal[stats[v][i].q+'-'+stats[v][x].q][stats[v][i].v +'-'+ stats[v][x].v] = 1;
+            }else{
+              statsreal[stats[v][i].q+'-'+stats[v][x].q][stats[v][i].v +'-'+ stats[v][x].v] += 1;
+            }
+          }
+        }
+      }
+    }
+    */
+    for(var v in stats){
+      for(var i = 0; i < stats[v].length; i++){
+        for(var x = 0; x < stats[v].length; x++){
+          if(i!=x){
+            if(!statsreal[stats[v][i].q+'-'+stats[v][x].q]){
+              statsreal[stats[v][i].q+'-'+stats[v][x].q] = {}
+            }            
+            else if(!statsreal [stats[v][i].q+'-'+stats[v][x].q][stats[v][i].v]){
+              statsreal[stats[v][i].q+'-'+stats[v][x].q][stats[v][i].v] = { [stats[v][x].v] : 1};
+            }else{
+              if(!statsreal [stats[v][i].q+'-'+stats[v][x].q][stats[v][i].v][stats[v][x].v]){
+                statsreal[stats[v][i].q+'-'+stats[v][x].q][stats[v][i].v][stats[v][x].v] = 1;
+              }else{
+                statsreal[stats[v][i].q+'-'+stats[v][x].q][stats[v][i].v][stats[v][x].v] ++;
+              }
+            }
+          }
+        }
+      }
+    }
+    for(v in statsreal){
+      for(x in statsreal[v]){
+        var total = 0;
+        for(z in statsreal[v][x]){
+          total += statsreal[v][x][z];
+        }
+        for(z in statsreal[v][x]){
+          statsreal[v][x][z] = parseInt(statsreal[v][x][z]/total*100);
+        }
+      }
+    }
+
+
+
+    if(err) return res.send({status:400, data:null, message:err});
+    else return res.send(statsreal);
+  });
+}
+
+/* pushes if unique */
+Array.prototype.pushifnotexist = function(obj){
+  for(var valueindex = 0; valueindex < this.length; valueindex++){
+    if(this[valueindex]==obj){
+      return;
+    }
+  }
+  this.push(obj)
+}
+
+
+router.get('/correlation', correlationFinder);
 router.get('/response', readResponses);
 router.get('/vote/:_id/:answer', voteQuestion);
 router.post('/addvote/:_id', addVote);

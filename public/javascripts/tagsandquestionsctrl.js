@@ -10,8 +10,7 @@ app.controller('tagsnquestionsctrl', function($scope, $http, $location, $http){
   $scope.questions = [];
   $scope.tagsUsed = [];
   $scope.search = '';
-  
->>>>>>> Stashed changes
+
   $scope.TagsUsedToIdArray = function(){
     var tempArr = [];
     for(var i = 0; i < $scope.tagsUsed.length; i++){
