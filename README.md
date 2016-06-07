@@ -4,7 +4,7 @@ GraphWhy is a free solution to the need for a good unrestrained survey provider.
 
 ## Getting Started
 
-Following this section will get you up and running so you can see what we are working with on our back end. Hopefully you will decide to help the cause aswell!
+Following this section will get you up and running so you can see what we are working with on our back end. Hopefully you will decide to help the cause aswell! (Instructions assume Ubuntu 14.04 but should work with other linux distros)
 
 ### Prerequisites
 
@@ -25,7 +25,7 @@ cd GraphwhyBackend
 sudo npm install
 ```
 ### Use
-Go to GraphwhyBackend then setup and start mongo:</br>
+Go to GraphwhyBackend then setup mongo:</br>
 ```
 sudo mkdir data
 sudo mongod --dbpath data &
