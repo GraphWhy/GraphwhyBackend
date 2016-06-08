@@ -105,6 +105,16 @@ function spliceTag(req,res){
     return res.send('could not find')
   })
 }
+function readAll(req, res){
+    Tag.model.findOne({title:req.params.title}, function(err, tag){
+    if(err){ 
+      return res.send(err);
+    }else{
+        Question.model.find({_id: { $in: tag.questions}}, function(err, questions){
+          res.send(questions);
+        });
+    }});
+}
 
 router.get('/:_id', getQuestion);
 router.get('/splice/:_id/:_id2', spliceTag);
@@ -114,5 +124,6 @@ router.delete('/', deleteTags);
 //router.get('/:_id/:num', readTagbyNum);
 router.post('/', createTag);
 router.get('/', readTags);
+router.get('/:title/all', readAll);
 
 module.exports = router;
