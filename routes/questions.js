@@ -157,14 +157,6 @@ function deleteQuestions(req, res){
   res.send({status:200, data:null, message:"Deleted all"});
 }
 
-function deleteResponses(req, res){
-  if(!req.user) return res.send({error:'no login'})
-  if(!req.user.admin) return res.send({error:'no admin'});
-  Response.model.remove().exec();
-  res.send({status:200, data:null, message:"Deleted all"});
-}
-
-
 function voteQuestion(req, res){
   if(!req.user) return res.send({error:'no login'})
   Response.model.find({user: req.user._id, question:req.params._id}, function (err, docs) {
@@ -224,6 +216,7 @@ function addVote(req, res){
 
 var statsreal = {};
 
+function getStats(){
   Response.model.find({},function(err, users){
     var responses = []
     var fakequestions = [];
@@ -320,7 +313,7 @@ var statsreal = {};
 
             statsreal[data[0]][data[1]][data[2]].prompt = 
             statsreal[data[0]][data[1]][data[2]].percent + 
-            '% of users voted who voted ' + votez + ' in ' + promptz + ' voted for ' + votex + ' in ' + 
+            '% of users who voted ' + votez + ' in ' + promptz + ' voted for ' + votex + ' in ' + 
             promptx;
 
           }.bind(null,[v,x,z,x_id,z_id]));
@@ -339,11 +332,35 @@ var statsreal = {};
       return res.send(statsreal)
     })
   });
+}
+getStats();
 
 function correlationFinder(req, res){
   res.send(statsreal);
 }
 
+function cleanResponses(req, res){
+  var promises = [];
+  if(!req.user) return res.send({error:'no login'})
+  if(!req.user.admin) return res.send({error:'no admin'});
+  Response.model.find({}, function(data){
+    for(var i = 0; i < data.length; i++){
+      var questionid = data.question;
+      var qp = Question.model.find({_id:questionid}).then(function(err,question){
+        if(!question){
+           Response.model.findOne({_id:data._id}).remove(function(err){
+            console.log(err)
+          });
+        }
+      });
+      promises.push(qp);
+    }
+  });
+
+  Promise.all(promises).then(function(){
+    res.send({status:200, data:null, message:"Deleted all"});
+  })
+}
 
 /* pushes if unique */
 Array.prototype.pushifnotexist = function(obj){
@@ -357,7 +374,7 @@ Array.prototype.pushifnotexist = function(obj){
 
 
 router.get('/correlation', correlationFinder);
-router.get('/deleteresponses', deleteResponses);
+router.get('/clean', cleanResponses);
 router.get('/response', readResponses);
 router.get('/vote/:_id/:answer', voteQuestion);
 router.post('/addvote/:_id', addVote);
