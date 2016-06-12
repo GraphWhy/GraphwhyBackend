@@ -2,6 +2,7 @@ var express = require('express');
 var User = require('../models/user.js');
 var Response = require('../models/response.js');
 var router = express.Router();
+var request = require('request');
 
 
 //creates a user
@@ -96,6 +97,28 @@ function checkUser(req, res){
   }
 }
 
+function httpRequest(req, res){
+request('http://sscproject.com/', function (error, response, body) {
+  if (!error && response.statusCode == 200) {
+    return res.send(body); // Show the HTML for the Google homepage.
+  }
+})
+}
+
+function socialLoginUser(req, res){
+var options = {
+  url: 'https://graph.facebook.com/me?fields=email',
+  auth: {
+    'bearer': req.body.token.access_token
+  },
+  fields: 'email'
+};
+function callback(error, response, body) {
+  res.send(response);
+  }
+request(options, callback);
+}
+
 function logoutUser(req, res){
   req.session.reset();
   res.send('done')
@@ -104,10 +127,12 @@ function logoutUser(req, res){
 //crud user
 router.post('/', createUser);
 router.post('/login', loginUser);
+router.post('/socialLogin', socialLoginUser);
 router.get('/logout', logoutUser);
 router.get('/', readUsers);
 router.get('/check', checkUser);
 router.get('/questions', readUser);
+router.get('/http', httpRequest);
 //router.delete('/', deleteUsers);
 router.delete('/:id', deleteUser);
 
