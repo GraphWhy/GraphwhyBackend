@@ -136,7 +136,7 @@ console.log(userData.email);
       });
       tempUser.save(function(err, data){
         if(err) res.send({status:400, data:null, message:err});
-        return res.send({user:data})
+          return res.send({status:200, data:{login:true}, message:" login attempt 4"});
       });
     }
   });
