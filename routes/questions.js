@@ -101,7 +101,6 @@ function readQuestions(req, res){
 }
 
 function readResponses(req, res){
-  res.header("Access-Control-Allow-Origin", "*");
   Response.model.find({},function(err, users){
     var userMap = {};
     users.forEach(function(user){
@@ -113,7 +112,6 @@ function readResponses(req, res){
 }
 
 function readQuestion(req, res){
-  res.header("Access-Control-Allow-Origin", "*");
   Question.model.findOne({_id:req.params._id},function(err, data){
     if(err) return res.send({status:400, data:null, message:err});
     return res.send({response:data});
