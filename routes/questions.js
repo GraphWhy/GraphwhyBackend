@@ -89,7 +89,6 @@ function createQuestion(req, res){
 }
 
 function readQuestions(req, res){
-  res.header("Access-Control-Allow-Origin", "*");
   Question.model.find({},function(err, users){
     var userMap = {};
     users.forEach(function(user){
