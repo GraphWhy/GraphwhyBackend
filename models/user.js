@@ -8,6 +8,7 @@ var User = new UserSchema({
     },
   admin: Boolean,
   password: String,
+  social: false,
   createdAt: { type:Date, default: Date.now },
   identities: String,
   responses: [String],

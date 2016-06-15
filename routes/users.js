@@ -2,6 +2,7 @@ var express = require('express');
 var User = require('../models/user.js');
 var Response = require('../models/response.js');
 var router = express.Router();
+var request = require('request');
 
 
 //creates a user
@@ -71,18 +72,22 @@ function deleteUsers(req, res){
 function loginUser(req, res){
   User.model.findOne({email:req.body.email}, function(err, user){
     if(err){
-      return res.send({status:200, data:{login:false}, message:" login attempt 1"})
+      return res.send({status:200, data:{login:false}, message:" login attempt 1"});
     }else{
       if(!user){
-        return res.send({status:200, data:{login:false}, message:" login attempt 2"})
+        return res.send({status:200, data:{login:false}, message:" login attempt 2"});
+      }else{
+      if(user.social == true){
+        return res.send({status:200, data:{login:false}, message:" That email is social"});
       }else{
         var p = require('crypto').createHash('md5').update(req.body.password).digest('hex');
         if(p==user.password){
           req.session.user = user;
-          return res.send({status:200, data:{login:true}, message:" login attempt 4"})
+          return res.send({status:200, data:{login:true}, message:" login attempt 4"});
         }else{
-          return res.send({status:200, data:{login:false}, message:" login attempt 3"})
+          return res.send({status:200, data:{login:false}, message:" login attempt 3"});
         }
+      }
       }
     }
   });
@@ -96,6 +101,49 @@ function checkUser(req, res){
   }
 }
 
+function httpRequest(req, res){
+request('http://sscproject.com/', function (error, response, body) {
+  if (!error && response.statusCode == 200) {
+    return res.send(body); // Show the HTML for the Google homepage.
+  }
+})
+}
+
+function socialLogin(req, res){
+var options = {
+  url: 'https://graph.facebook.com/me?fields=email',
+  auth: {
+    'bearer': req.body.token.access_token
+  },
+  fields: 'email'
+};
+function callback(error, response, body) {
+var userData = JSON.parse(response.body);
+console.log(userData.email);
+    User.model.find({email: userData.email}, function (err, docs) {
+    if (docs.length){
+      //email is there, go to login
+      console.log('User exists');
+        
+          req.session.user = docs;
+          return res.send({status:200, data:{login:true}, message:" login attempt 4"});
+    }else{
+      //email is not in database create user then go to login
+      var tempUser = new User.model({
+        email: userData.email,
+        social: true,
+        admin: false
+      });
+      tempUser.save(function(err, data){
+        if(err) res.send({status:400, data:null, message:err});
+          return res.send({status:200, data:{login:true}, message:" login attempt 4"});
+      });
+    }
+  });
+  }
+request(options, callback);
+}
+
 function logoutUser(req, res){
   req.session.reset();
   res.send('done')
@@ -104,10 +152,12 @@ function logoutUser(req, res){
 //crud user
 router.post('/', createUser);
 router.post('/login', loginUser);
+router.post('/socialLogin', socialLogin);
 router.get('/logout', logoutUser);
 router.get('/', readUsers);
 router.get('/check', checkUser);
 router.get('/questions', readUser);
+router.get('/http', httpRequest);
 //router.delete('/', deleteUsers);
 router.delete('/:id', deleteUser);
 
