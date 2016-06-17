@@ -101,46 +101,61 @@ function checkUser(req, res){
   }
 }
 
-function httpRequest(req, res){
-request('http://sscproject.com/', function (error, response, body) {
-  if (!error && response.statusCode == 200) {
-    return res.send(body); // Show the HTML for the Google homepage.
-  }
-})
+
+//problem with undefined going to login if email is not undefined, but an error or something. only really need to worry if oauth fails. tight capsule as long as things go expectedly 
+function socialLogin(req, res){
+var social = {
+  facebook: {
+             url: 'https://graph.facebook.com/me?fields=email'
+					},
+  google: {
+					 url: 'https://www.googleapis.com/plus/v1/people/me'
+			   },
+  getEmail: {
+		facebook: function(response){
+			            return JSON.parse(response.body).email;
+              },
+    google: function(response){
+			            return JSON.parse(response.body).emails[0].value;
+					  }
+	}
 }
 
-function socialLogin(req, res){
-var options = {
-  url: 'https://graph.facebook.com/me?fields=email',
-  auth: {
-    'bearer': req.body.token.access_token
-  },
-  fields: 'email'
-};
+var provider = req.body.social;
+console.log(provider);
+social[provider].auth =  {};
+social[provider].auth.bearer =  req.body.token.access_token;
+console.log(social[provider]);
+var options = social[provider];
 function callback(error, response, body) {
-var userData = JSON.parse(response.body);
-console.log(userData.email);
-    User.model.find({email: userData.email}, function (err, docs) {
+var email = social.getEmail[provider](response);
+console.log(email);
+if (email != undefined){
+    User.model.find({email: email}, function (err, docs) {
     if (docs.length){
       //email is there, go to login
-      console.log('User exists');
+      console.log('User '+email+' exists');
         
           req.session.user = docs;
-          return res.send({status:200, data:{login:true}, message:" login attempt 4"});
+          return res.send({status:200, data:{login:true}, message:" Login success!"});
     }else{
+      console.log('User '+email+' not found. Creating account.');
       //email is not in database create user then go to login
       var tempUser = new User.model({
-        email: userData.email,
+        email: email,
         social: true,
         admin: false
       });
       tempUser.save(function(err, data){
         if(err) res.send({status:400, data:null, message:err});
-          return res.send({status:200, data:{login:true}, message:" login attempt 4"});
+          return res.send({status:200, data:{login:true}, message:" Login success!"});
       });
     }
   });
+  }else{
+          return res.send({status:200, data:{login:false}, message:" Token did not work with API."});
   }
+}
 request(options, callback);
 }
 
@@ -157,7 +172,6 @@ router.get('/logout', logoutUser);
 router.get('/', readUsers);
 router.get('/check', checkUser);
 router.get('/questions', readUser);
-router.get('/http', httpRequest);
 //router.delete('/', deleteUsers);
 router.delete('/:id', deleteUser);
 
