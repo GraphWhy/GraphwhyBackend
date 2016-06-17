@@ -89,7 +89,6 @@ function createQuestion(req, res){
 }
 
 function readQuestions(req, res){
-  res.header("Access-Control-Allow-Origin", "*");
   Question.model.find({},function(err, users){
     var userMap = {};
     users.forEach(function(user){
@@ -101,7 +100,6 @@ function readQuestions(req, res){
 }
 
 function readResponses(req, res){
-  res.header("Access-Control-Allow-Origin", "*");
   Response.model.find({},function(err, users){
     var userMap = {};
     users.forEach(function(user){
@@ -113,7 +111,6 @@ function readResponses(req, res){
 }
 
 function readQuestion(req, res){
-  res.header("Access-Control-Allow-Origin", "*");
   Question.model.findOne({_id:req.params._id},function(err, data){
     if(err) return res.send({status:400, data:null, message:err});
     return res.send({response:data});
@@ -315,6 +312,11 @@ function getStats(){
             statsreal[data[0]][data[1]][data[2]].percent + 
             '% of users who voted ' + votez + ' in ' + promptz + ' voted for ' + votex + ' in ' + 
             promptx;
+              
+            statsreal[data[0]][data[1]][data[2]].answer1 = votez;
+            statsreal[data[0]][data[1]][data[2]].question1 = promptz;
+            statsreal[data[0]][data[1]][data[2]].answer2 = votex;
+            statsreal[data[0]][data[1]][data[2]].question2 = promptx;
 
           }.bind(null,[v,x,z,x_id,z_id]));
 
@@ -323,7 +325,11 @@ function getStats(){
           statsreal[v][x][z] = {
             prompt: '',
             percent:parseInt(statsreal[v][x][z]/total*100),
-            amount:statsreal[v][x][z]
+            amount:statsreal[v][x][z],
+            answer1: '',
+            question1:'',
+            answer2:'',
+            question2:''
           }
         }
       }
