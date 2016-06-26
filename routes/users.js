@@ -131,13 +131,12 @@ function callback(error, response, body) {
 var email = social.getEmail[provider](response);
 console.log(email);
 if (email != undefined){
-    User.model.find({email: email}, function (err, docs) {
-    if (docs.length){
+    User.model.findOne({email: email}, function (err, user) {
+    if (user){
       //email is there, go to login
       console.log('User '+email+' exists');
-        
-          req.session.user = docs;
-          return res.send({status:200, data:{login:true}, message:" Login success!"});
+          req.session.user = user;
+          return res.send({status:200, data:{login:true}, message:" Social login success!"});
     }else{
       console.log('User '+email+' not found. Creating account.');
       //email is not in database create user then go to login
@@ -147,8 +146,14 @@ if (email != undefined){
         admin: false
       });
       tempUser.save(function(err, data){
-        if(err) res.send({status:400, data:null, message:err});
-          return res.send({status:200, data:{login:true}, message:" Login success!"});
+        if(err){
+						 res.send({status:400, data:null, message:err});
+				}else{
+        User.model.findOne({email: email}, function (err, newUser) {
+          req.session.user = newUser;
+          return res.send({status:200, data:{login:true}, message:" Social signup success!"});
+				});
+				}
       });
     }
   });
