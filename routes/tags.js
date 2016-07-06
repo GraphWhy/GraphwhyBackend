@@ -88,6 +88,7 @@ function getQuestion(req, res){
   });
 }
 
+
 function spliceTag(req,res){
   Tag.model.findOne({_id:req.params._id}, function(err, tag){
     if(err) return res.send(err)
@@ -116,7 +117,31 @@ function readAll(req, res){
     }});
 }
 
+
+function getQuestionsReact(req, res){
+  Tag.model.findOne({title:req.params.title}, function(err,data){
+    if(err) return res.send('error1')
+    var promises = [];
+    var arr = [];
+    
+    for(var i = 0; i < data.questions.length; i++){
+      promises.push(Question.model.find({_id:data.questions[req.params.num]}, function(err1,question){
+        if(err1) return res.send('error2');
+        arr.push(question)
+        return question;
+      }));
+    }
+    
+    Promise.all(promises).then(function(d){
+      return res.send(arr)
+    })
+    
+  });
+}
+
+
 router.get('/:_id', getQuestion);
+router.get('/questions/:title', getQuestionsReact);
 router.get('/splice/:_id/:_id2', spliceTag);
 router.delete('/:_id', deleteTag);
 router.delete('/', deleteTags);
