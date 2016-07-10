@@ -1,3 +1,5 @@
+"use strict";
+
 var boot = require('../bin/www').boot,
   shutdown = require('../bin/www').shutdown,
   port = require('../bin/www').port,
@@ -221,5 +223,3 @@ describe('users, tags, and questions', function () {
   })
 
 });
-
-

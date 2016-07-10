@@ -1,3 +1,5 @@
+"use strict";
+
 var mongoose = require('mongoose');
 var QuestionSchema = mongoose.Schema;
 var Question = new QuestionSchema({
@@ -15,7 +17,7 @@ var Question = new QuestionSchema({
   history: [{
       id: String,
       time : String
-  }], 
+  }],
   tags: [String],
   createdAt: { type:Date, default: Date.now },
   createdby: String,
@@ -23,6 +25,9 @@ var Question = new QuestionSchema({
   type: { type: String, required: true, default: 'multiplechoice' }
 });
 
-module.exports.model = mongoose.model("question_graphwhy", Question);
+var collection_name = 'question';
+if(process.env.NODE_ENV) {
+  collection_name += '_' + process.env.NODE_ENV;
+}
 
-
+module.exports.model = mongoose.model(collection_name, Question);

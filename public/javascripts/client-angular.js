@@ -1,7 +1,7 @@
 (function(){
 var app = angular.module('myApp' , []);
 
-var url = "/api/";
+var url = "/api/v0.1/";
 
 app.controller('mainctrl', function($scope, $http, $location, $http){
   $scope.loggedin = false;

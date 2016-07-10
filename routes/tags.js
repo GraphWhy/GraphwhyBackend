@@ -1,62 +1,60 @@
+"use strict";
+
 var express = require('express');
 var Tag = require('../models/tag.js');
 var Question = require('../models/question.js');
 var Response = require('../models/response.js');
+var util = require('./util.js');
 
 var router = express.Router();
 
-function createTag(req, res){
-  if(!req.user) return res.send({error:'no login'});
-  var tempTag = new Tag.model({
-    title: req.body.title,
-    createdby : req.user._id
-  });
-  tempTag.save(function(err, data){
-    if(err) res.send({status:400, data:null, message:err});
-    res.send({response:tempTag});
-  });
-}
-
-function readTags(req, res){
-  Tag.model.find({},function(err, users){
-    var userMap = {};
-    users.forEach(function(user){
-      userMap[user._id] = user;
-    })
-    if(err) return res.send({status:400, data:null, message:err});
-    else return res.send({status:200, data:userMap, message:"Fetching Tags"});
-  });
-}
-
-function readTag(req, res){
-  Tag.model.findOne({_id:req.params._id},function(err, data){
-    if(err) return res.send(err);
-    return res.send(data);
-  });
-}
-
-function readTagbyNum(req, res){
-  Tag.model.findOne({_id:req.params._id}, function(err,data){
-    if(req.params.num>=data.questions.length) return res.send('error');
-    Question.model.findOne({_id:data.questions[req.params.num]}, function(err,question){
-      return res.send(question)
+function createTag(req, res) {
+  if(util.isUser(req, res)) {
+    var tag = new Tag.model({
+      title: req.body.title,
+      createdby: req.user._id
     });
-  })
+    tag.save(function (err, data) {
+      if (err) res.send({status: 400, data: null, message: err});
+      res.status(201).send(data);
+    });
+  }
+}
+
+function readTags(req, res) {
+  Tag.model.find({},function(err, tags) {
+    if(err) {
+      return res.status(400).send(err);
+    } else {
+      return res.status(200).send(tags)
+    }
+  });
+}
+
+function readTag(req, res) {
+  Tag.model.findOne({_id:req.params._id},function(err, data) {
+    if (err) {
+      return res.status(404).send(err);
+    } else {
+      return res.status(200).send(data);
+    }
+  });
 }
 
 function deleteTag(req, res){
-  if(!req.user.admin) return res.send({error:'no admin'});
-  Tag.model.findOne({_id:req.params._id}).remove(function(err){
-    if(err) return res.send({status:400, data:null, message:err});
-    return res.send({'response':'deleted '+req.params._id})
-  });
+  if(util.isAdmin(req, res)) {
+    Tag.model.findOne({_id: req.params.id}).remove(function(err) {
+      if (err) res.status(400).send(err);
+      else res.status(200).send('deleted ' + req.params.id);
+    });
+  }
 }
 
 function deleteTags(req, res){
-  if(!req.user) return res.send({error:'no login'})
-  if(!req.user.admin) return res.send({error:'no admin'});
-  Tag.model.remove().exec();
-  res.send({status:200, data:null, message:"Deleted all"});
+  if(util.isAdmin(req, res)) {
+    Tag.model.remove().exec();
+    res.send({status:200, data:null});
+  }
 }
 
 function getQuestion(req, res){
@@ -88,26 +86,9 @@ function getQuestion(req, res){
   });
 }
 
-function spliceTag(req,res){
-  Tag.model.findOne({_id:req.params._id}, function(err, tag){
-    if(err) return res.send(err)
-    if(!tag) return res.send('no tag');
-    for(var i = 0; i < tag.questions.length; i++){
-      if(req.params._id2 == tag.questions[i]){
-        tag.questions.splice(i,1);
-        tag.markModified('questions');
-        tag.save(function(err,data){
-          if(err) return res.send(err)
-          return res.send('found and deleted')
-        })
-      }
-    }
-    return res.send('could not find')
-  })
-}
-function readAll(req, res){
+function readQuestionsForTag(req, res){
     Tag.model.findOne({title:req.params.title}, function(err, tag){
-    if(err){ 
+    if(err){
       return res.send(err);
     }else{
         Question.model.find({_id: { $in: tag.questions}}, function(err, questions){
@@ -116,14 +97,12 @@ function readAll(req, res){
     }});
 }
 
-router.get('/:_id', getQuestion);
-router.get('/splice/:_id/:_id2', spliceTag);
+// router.get('/:_id', getQuestion);
 router.delete('/:_id', deleteTag);
 router.delete('/', deleteTags);
-//router.get('/:_id', readTag);
-//router.get('/:_id/:num', readTagbyNum);
+router.get('/:_id', readTag);
 router.post('/', createTag);
 router.get('/', readTags);
-router.get('/:title/all', readAll);
+router.get('/:title/all', readQuestionsForTag);
 
 module.exports = router;

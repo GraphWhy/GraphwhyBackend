@@ -1,3 +1,5 @@
+"use strict";
+
 var mongoose = require('mongoose');
 var UserSchema = mongoose.Schema;
 var User = new UserSchema({
@@ -17,5 +19,9 @@ var User = new UserSchema({
   timeOnSite: Number
 });
 
-module.exports.model = mongoose.model("user_graphwhy", User);
+var collection_name = 'user';
+if(process.env.NODE_ENV) {
+  collection_name += '_' + process.env.NODE_ENV;
+}
 
+module.exports.model = mongoose.model(collection_name, User);

@@ -1,7 +1,8 @@
 (function(){
 var app = angular.module('myApp');
 
-var url = "/api/";
+// Can we reuse the same variable in client-angular.js?
+var url = "/api/v0.1/";
 
 
 app.controller('tagsnquestionsctrl', function($scope, $http, $location, $http){

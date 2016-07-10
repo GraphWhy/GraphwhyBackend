@@ -1,3 +1,5 @@
+"use strict";
+
 var express = require('express');
 var router = express.Router();
 var requestify = require('requestify');
@@ -11,7 +13,4 @@ router.get('/:test?', function(req, res, next) {
   res.redirect('google.com')
 });
 
-
 module.exports = router;
-
-

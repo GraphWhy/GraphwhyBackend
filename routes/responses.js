@@ -92,28 +92,22 @@ function createQuestion(req, res) {
   }
 }
 
-function readQuestions(req, res) {
-  Question.model.find({},function(err, questions){
-    if(err) {
+function readResponses(req, res) {
+  Response.model.find({},function(err, responses) {
+    if (err) {
       return res.status(400).send(err);
     } else {
-      return res.status(200).send(questions)
-    }});
-}
-
-function readResponses(req, res) {
-  Response.model.find({},function(err, responses){
-    if(err) return res.send({status:400, data:null, message:err});
-    else return res.send({status:200, data:responses});
+      return res.status(200).send(responses);
+    }
   });
 }
 
-function readQuestion(req, res) {
-  Question.model.findOne({_id:req.params._id},function(err, data) {
+function readResponse(req, res) {
+  Response.model.findOne({_id:req.params._id},function(err, response) {
     if (err) {
       return res.status(404).send(err);
     } else {
-      return res.status(200).send(data);
+      return res.status(200).send(response);
     }
   });
 }
@@ -124,13 +118,13 @@ function deleteQuestion(req, res) {
 
     promises.push(Question.model.findOne({_id:req.params._id}, function(err, data) {
       if(err) return res.send(err);
-      if(!data) return res.send('no data')
+      if(!data) return res.send('no data');
       for(var i = 0; i < data.tags.length; i++){
         Tag.model.findOne({_id:data.tags[i]}, function(err, data2){
           for(var v = 0; v < data2.questions.length; v++){
             if(data2.questions[v] == req.params._id){
               data2.questions.splice(v,1);
-              data2.markModified('questions')
+              data2.markModified('questions');
               data2.save();
             }
           }
@@ -146,9 +140,9 @@ function deleteQuestion(req, res) {
   }
 }
 
-function deleteQuestions(req, res){
+function deleteResponses(req, res) {
   if(util.isAdmin(req, res)) {
-    Question.model.remove().exec();
+    Response.model.remove().exec();
     res.send({status:200, data:null});
   }
 }
@@ -370,17 +364,15 @@ Array.prototype.pushifnotexist = function(obj){
   this.push(obj)
 }
 
-
 router.get('/correlation', correlationFinder);
 router.get('/clean', cleanResponses);
 router.get('/response', readResponses);
 router.get('/vote/:_id/:answer', voteQuestion);
 router.post('/addvote/:_id', addVote);
-router.post('/', createQuestion);
-router.get('/', readQuestions);
-router.get('/:_id', readQuestion);
-router.delete('/', deleteQuestions);
-router.delete('/:_id', deleteQuestion);
-
+router.post('/', createResponse);
+router.get('/', readResponses);
+router.get('/:_id', readResponse);
+router.delete('/', deleteResponses);
+router.delete('/:_id', deleteResponse);
 
 module.exports = router;

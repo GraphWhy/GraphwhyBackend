@@ -1,3 +1,5 @@
+"use strict";
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -8,8 +10,9 @@ var mongoose = require('mongoose')
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var questions = require('./routes/questions');
+// var responses = require('./routes/responses');
 var fb = require('./routes/fb');
-var tags = require('./routes/tags')
+var tags = require('./routes/tags');
 var session = require('client-sessions');
 var User = require('./models/user.js');
 var app = express();
@@ -44,9 +47,8 @@ app.use(function(req,res,next){
       return res.status(200).end();
   }
 
-
-  if(req.session && req.session.user){
-    User.model.findOne({ _id: req.session.user._id }, function(err,user){
+  if(req.session && req.session.user) {
+    User.model.findOne({ _id: req.session.user._id }, function(err,user) {
       if(user){
         req.user = user;
         delete req.user.password;
@@ -55,7 +57,7 @@ app.use(function(req,res,next){
       }
       next();
     });
-  }else{
+  } else {
     next();
   }
 });
@@ -67,12 +69,14 @@ mongoose.connect( "mongodb://localhost:27017/" , function (err, res) {
   console.log ('Connected to mongodb://localhost:27017/');
 }});
 
+const API_PREFIX = '/api/v0.1'
 
 app.use('/', routes);
-app.use('/api/user', users);
-app.use('/api/fb', fb);
-app.use('/api/tag', tags);
-app.use('/api/question', questions)
+app.use(API_PREFIX + '/user', users);
+app.use(API_PREFIX + '/fb', fb);
+app.use(API_PREFIX + '/tag', tags);
+app.use(API_PREFIX + '/question', questions);
+// app.use(API_PREFIX + '/response', responses);
 app.use('/:tags', routes);
 
 // catch 404 and forward to error handler

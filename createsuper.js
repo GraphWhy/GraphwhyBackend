@@ -1,3 +1,5 @@
+"use strict";
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -31,7 +33,6 @@ mongoose.connect( "mongodb://localhost:27017/" , function (err, res) {
         if(err) res.send({status:400, data:null, message:err});
         return res.send({user:data})
       });
-    
+
   }
 });
-

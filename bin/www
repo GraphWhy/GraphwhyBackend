@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 
+"use strict";
+
 /**
  * Module dependencies.
  */
 
 var app = require('../app');
-var debug = require('debug')('thepeninsulateam:server');
+var debug = require('debug')('server');
 var http = require('http');
 
 /**
@@ -88,3 +90,5 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+module.exports = server;
