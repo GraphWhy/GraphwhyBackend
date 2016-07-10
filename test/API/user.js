@@ -34,7 +34,7 @@ describe('Users', function() {
   it('should return one user',function(done) {
     request(util.server)
       .get(util.API_PREFIX + ENDPOINT + '/' + idToRequest)
-      // .expect('Content-Type', 'application/json; charset=utf-8')
+      .expect('Content-Type', 'application/json; charset=utf-8')
       .expect(200)
       .end(function(err, res) {
         if(err) return done(err);

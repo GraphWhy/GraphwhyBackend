@@ -12,7 +12,7 @@ var util = require('./util.js');
 //creates a user
 //urlparams: POST:/api/users/
 //post: 'email', 'password'
-function createUser(req, res){
+function createUser(req, res) {
   if(util.isAdmin(req, res)) {
     if(!req.body.email || !req.body.password) {
       return res.status(400).send('Email and password are required.');
@@ -38,7 +38,6 @@ function createUser(req, res){
     });
   }
 }
-
 
 //prints out all users
 //urlparams: GET:/api/users/
